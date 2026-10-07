@@ -1,0 +1,501 @@
+\documentclass[11pt]{amsart}
+\usepackage[margin=1.1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[colorlinks=true,linkcolor=blue!60!black,citecolor=blue!60!black,urlcolor=blue!60!black]{hyperref}
+\usepackage{enumitem}
+\usepackage{tikz-cd}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
+\newtheorem*{caveat}{Caveat}
+
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\PP}{\mathbb{P}}
+\newcommand{\OO}{\mathcal{O}}
+\newcommand{\KK}{\mathcal{K}}
+\newcommand{\Gr}{\mathrm{Gr}}
+\newcommand{\GL}{\mathrm{GL}}
+\newcommand{\End}{\mathrm{End}}
+\newcommand{\Hom}{\mathrm{Hom}}
+\newcommand{\Spec}{\mathrm{Spec}}
+\newcommand{\Hilb}{\mathrm{Hilb}}
+\newcommand{\eu}{\mathrm{eu}}
+\newcommand{\bv}{\mathbf{v}}
+\newcommand{\bw}{\mathbf{w}}
+\newcommand{\bb}{\mathbf{b}}
+\newcommand{\bd}{\mathbf{d}}
+\newcommand{\Ttop}{T_{\mathrm{top}}}
+\newcommand{\Hc}{H^*_F(X)}
+
+\title{A reader's guide to\\ ``The equivariant cohomological Hikita conjecture for arbitrary quivers''}
+\author{Notes prepared for the SLMath QFT program}
+\date{October 2026}
+
+\begin{document}
+\maketitle
+
+\begin{caveat}
+These notes summarize a preprint released by OpenAI on 24 September 2026
+\cite{OAI-Hikita} as part of a collection of manuscripts written by an
+unreleased internal model.  The preprint has not been refereed and has no
+Lean formalization in the release; the release notes themselves say
+that unformalized results ``could have issues.''  These notes were drafted
+by Claude (Anthropic) at Ben Webster's request from the \LaTeX\ source,
+and reorganize the argument for readability.  They do \emph{not} verify
+the proofs: every ``proof'' below is a sketch of what the preprint
+claims, and the words ``the paper shows'' should be read as ``the paper
+asserts, with an argument I have summarized but not checked.''
+Section~\ref{sec:assessment} records which inputs are standard and
+which steps are new.
+\end{caveat}
+
+\section{The statement}
+
+\subsection{Data}
+Fix a finite quiver $Q=(Q_0,Q_1)$, loops and multiple arrows allowed, with
+gauge dimension vector $\bv$ and framing vector $\bw$.  Put
+\[
+ G=\prod_{i\in Q_0}\GL(V_i),\qquad
+ N=\bigoplus_{a:i\to j}\Hom(V_i,V_j)\ \oplus\ \bigoplus_i\Hom(V_i,W_i),
+\]
+with $\dim V_i=v_i$, $\dim W_i=w_i$.  Let $F$ be any torus acting on $N$
+and commuting with $G$ (a ``flavor torus''), and let $\mu:T^*N\to\mathfrak g^*$
+be the moment map.
+
+Fix a character $\nu$ of $G$.  The paper calls $\nu$ \emph{regular} if, on
+$\mu^{-1}(0)$, every $\nu$-semistable point is stable and $G$ acts freely
+on the semistable locus.  Then
+\[
+ X=\mu^{-1}(0)^{\nu\text{-st}}/G
+\]
+is a smooth Nakajima quiver variety, possibly empty.
+
+\subsection{The two sides}
+\emph{Higgs side.}  $H^*_F(X;\C)$, the $F$-equivariant cohomology.
+
+\emph{Coulomb side.}  Let $\OO=\C[[t]]$, $\KK=\C((t))$, and let
+$\mathcal R=\{[g,s]\in G(\KK)\times_{G(\OO)}N(\OO): gs\in N(\OO)\}$ be the
+Braverman--Finkelberg--Nakajima space of triples.  Its
+$G(\OO)\rtimes F$-equivariant Borel--Moore homology
+\[
+ A_F=H_*^{G(\OO)\times F}(\mathcal R)
+\]
+is a commutative algebra under convolution (there is no loop-rotation
+parameter, so this is the \emph{commutative} Coulomb branch, deformed by
+the flavor parameters).  Its spectrum $Y_{\mathfrak f}=\Spec A_F$ is the
+flavor-deformed Coulomb branch.  The algebra $A_F$ is graded by
+$\pi_1(G)=\Z^{Q_0}$ (``topological charge'' or ``monopole charge''), which
+is the same as an action of the torus $\Ttop=\Hom(\pi_1(G),\C^\times)$.
+The character $\nu$ of $G$ is a cocharacter of $\Ttop$, and the
+\emph{scheme-theoretic} fixed locus of this cocharacter has coordinate ring
+\[
+ \C[Y_{\mathfrak f}^\nu]=A_F\big/\big\langle (A_F)_m : m\neq 0\big\rangle,
+\]
+where $(A_F)_m$ is the subspace on which $\nu$ acts with weight $m$, i.e.\
+the sum of charge spaces $A_F^{(d)}$ with $\nu\cdot d=m$.  No reduction is
+taken: nilpotents are kept.
+
+\subsection{The common coefficient ring}
+Both sides are algebras over
+\[
+ R=H^*_{G\times F}(\mathrm{pt})=\C[\mathfrak t\oplus\mathfrak f]^W,
+\]
+the ring of symmetric functions in the Chern roots $x_{ia}$ of the gauge
+bundles together with the flavor parameters.  On the Higgs side $R$ acts by
+the Kirwan map $\phi_H:R\to \Hc$ (Chern classes of tautological
+bundles).  On the Coulomb side $R=H^*_{G(\OO)\times F}(\mathrm{pt})$ is the
+charge-zero part of $A_F$, so it maps to $\C[Y_{\mathfrak f}^\nu]$ by
+$\phi_C$.  The content of the conjecture is that the \emph{relations}
+agree.
+
+\begin{theorem}[{\cite[Theorem~1.1]{OAI-Hikita}}]\label{thm:main}
+For every finite quiver, every $\bv,\bw$, every commuting flavor torus $F$
+and every regular character $\nu$, both $\phi_H$ and $\phi_C$ are
+surjective with the same kernel.  Hence there is a canonical isomorphism of
+graded $R$-algebras
+\[
+ \Hc\ \cong\ \C[Y_{\mathfrak f}^\nu].
+\]
+The grading on the left is cohomological degree, on the right the BFN
+homological degree.  The empty case ($X=\varnothing$, both rings zero) is
+included.
+\end{theorem}
+
+This is the conjecture as formulated by Dumanski--Krylov
+\cite[Conj.~2.1, eq.~(2.3)]{DK25}, building on Hikita \cite{Hikita17},
+Nakajima, and Kamnitzer--Tingley--Webster--Weekes--Yacobi.  Previously known cases:
+the Jordan quiver (Gieseker varieties, Krylov--Shlykov \cite{KS25}) and
+finite type $A,D,E_6$, with restrictions on the framing in $E_7,E_8$
+(Dumanski--Krylov \cite{DK25}).  The theorem does \emph{not} address the
+quantized version, nor gauge groups other than products of $\GL$'s.
+
+\subsection{Why it is not a dimension count}
+Two features make the statement harder than ``both sides have the same
+Betti numbers.''
+\begin{enumerate}[leftmargin=2em]
+\item The Coulomb side is a non-reduced scheme.  Even when the set of
+$\nu$-fixed points on $Y_{\mathfrak f}$ is tiny, its nilpotent functions
+must encode the positive-degree cohomology of $X$.  So the comparison must
+be an isomorphism of $R$-algebras \emph{under the specified maps}, not
+merely an abstract isomorphism, and not an isomorphism after inverting
+generic parameters.
+\item A regular character $\nu$ may satisfy $\nu\cdot\bb=0$ for some
+dimension vector $0<\bb\le\bv$.  Then the cocharacter-fixed scheme
+$Y_{\mathfrak f}^\nu$ is a priori bigger than the fixed scheme of the
+whole torus $\Ttop$: a monopole of charge $\bb$ has $\nu$-weight zero and
+is not obviously killed.  (Example from the paper: two disconnected
+vertices, $\bv=\bw=(1,1)$, $\nu=(1,-1)$.  This is regular but
+$\nu\cdot(1,1)=0$.)
+\end{enumerate}
+
+\section{Architecture of the proof}
+
+Introduce the intermediate ring
+\[
+ B_F=\C[Y_{\mathfrak f}^{\Ttop}]=A_F\big/\big\langle A_F^{(d)} : d\neq 0\big\rangle,
+\]
+the coordinate ring of the fixed scheme of the \emph{full} topological
+torus (equivalently: kill every monopole operator of nonzero charge).
+There are natural maps
+\[
+ \C[Y_{\mathfrak f}^\nu]\ \twoheadrightarrow\ B_F,
+ \qquad\qquad
+ R\ \twoheadrightarrow\ B_F,\quad R\ \twoheadrightarrow\ \Hc .
+\]
+The proof splits into two independent halves.
+
+\medskip
+\noindent\textbf{Part I} ($\S\S3$--$7$ of the paper): \ $B_F\cong\Hc$, i.e.\
+$\ker(R\to B_F)=\ker(R\to\Hc)$.
+
+\noindent\textbf{Part II} ($\S8$): \ $\C[Y_{\mathfrak f}^\nu]\to B_F$ is an
+isomorphism, i.e.\ the ideal generated by nonzero-$\nu$-weight monopoles
+already contains every nonzero-charge monopole.
+
+\medskip
+Part I is itself a three-stage argument: prove one inclusion of ideals in
+general; prove equality in a special situation (loops at every vertex,
+determinant stability) by a size count; deform back.
+
+\section{Part I, stage 0: generators on both sides}
+
+Both $B_F$ and $\Hc$ are quotients of $R$:
+\begin{itemize}[leftmargin=2em]
+\item \emph{Higgs:} Kirwan surjectivity for quiver varieties
+(McGerty--Nevins \cite{MN18}), including the equivariant version.  This also
+gives $H^{\mathrm{odd}}(X)=0$.
+\item \emph{Coulomb:} BFN abelianization embeds $A_F$ into
+$\big(\mathrm{Frac}(P_F)[X_*(T)]\big)^W$ where $P_F=\C[x_{ia}]\otimes\C[\mathfrak f]$,
+and Weekes's generation theorem \cite{Weekes19} says $A_F$ is generated over $R$ by
+the \emph{dressed minuscule monopoles}: for a coweight $\lambda$ all of whose
+entries are in $\{0,1\}$ (or all in $\{0,-1\}$) and a $W_\lambda$-invariant
+polynomial $p$,
+\begin{equation}\label{eq:minuscule}
+ M_{\lambda,p}=\sum_{\lambda'\in W\lambda}
+ e^{\lambda'}\,p_{\lambda'}\,
+ \frac{\prod_{\beta\in\mathrm{wt}(N)}\beta^{(-\langle\beta,\lambda'\rangle)_+}}
+      {\eu_T\big(T_{t^{\lambda'}}\Gr_G^{\lambda}\big)} .
+\end{equation}
+Consequently the ideal $\langle A_F^{(d)}:d\neq0\rangle$ is generated by the
+nontrivial minuscule monopoles, and any relation $u\in\ker(R\to B_F)$ can be
+written as a finite sum of \emph{neutral words}: products of minuscule
+monopoles of total charge zero.
+\end{itemize}
+
+\section{Part I, stage 1: the stable-pair test (one inclusion)}
+
+\begin{proposition}[{\cite[Prop.~4.1]{OAI-Hikita}}]
+For all data in Theorem~\ref{thm:main}, $\ker(R\to B_F)\subseteq\ker(R\to\Hc)$;
+so the coefficient map induces a graded surjection $B_F\twoheadrightarrow\Hc$.
+\end{proposition}
+
+\noindent\emph{Idea.}  Take a Coulomb relation $u=\sum_w(\text{neutral word})$.
+One wants to show $u$ restricts to zero on $D=\mu^{-1}(0)^{\nu\text{-st}}$.
+The paper does this by building a finite-dimensional ``test'' that sees both
+the identity lattice (where $u$ acts by cup product) and the first step of
+each word (which it kills).
+
+\begin{enumerate}[leftmargin=2em]
+\item \emph{Finite correspondences} (\S3).  Truncate $N(\KK)$ to
+$L=t^{-l}N(\OO)/t^lN(\OO)$ and, for a bounded family $B$ of lattices
+$b=gG(\OO)$, let $S_B\to L$ be the family of truncated lattices
+$E_b=gN(\OO)/t^lN(\OO)$.  A word in minuscule monopoles becomes a chain of
+incidence correspondences between such families, and the paper proves
+(by a localization argument that is faithful because the relevant
+Borel--Moore homology is free over $H^*_{T\times F}(\mathrm{pt})$) that the
+relation $u=\sum_w(\ldots)$ in $A_F$ becomes an identity
+$u\cdot\rho_Z=\sum_w\Psi_w$ of morphisms of constructible sheaves on $L$,
+where $\rho_Z$ is restriction to the identity lattice and each $\Psi_w$
+factors through the family of the \emph{first} lattice of the word $w$.
+\item \emph{The test} (\S4).  On $\widetilde L=L\times D\times P_-$ define
+the function
+\[
+ W(n,s,p,y)=\mathrm{Res}\big(\langle p+y,n\rangle-\langle y,s\rangle\big),
+ \qquad (s,p)\in D,
+\]
+and test a sheaf $\mathcal F$ on $L$ by taking $G\times F$-equivariant
+cohomology of the vanishing cycles $\Phi_W(\mathrm{pr}^*\mathcal F)$.  The
+critical locus of $W$ restricted to a lattice family is exactly the locus
+where the stable pair $(s,p)$ extends across the lattice modification to a
+pair of sections of the associated bundle on $\PP^1$.
+\item \emph{Stability kills the first step.}  If $\mathcal P$ is a
+$G$-bundle on $\PP^1$ with a section of $\mathcal P\times_G T^*N$ whose
+value at $\infty$ is $\nu$-stable with trivial stabilizer, then
+$\deg\mathcal L_\nu\ge0$, with equality only if $\mathcal P$ is trivial
+and the section is constant.  (Proof: a $\nu^m$-semi-invariant nonzero at
+$\infty$ gives a nonzero section of $\mathcal L_\nu^{m}$; in degree zero
+the induced map $\PP^1\to T^*N/\!/_\nu G$ is constant because the GIT
+polarization is relatively ample over the affine quotient.)  Since each
+word is neutral, the $\nu$-degrees of its steps sum to zero, so (by
+commutativity) one can put a step of nonpositive $\nu$-degree and nonzero
+charge first.  Its critical locus is empty, so its test vanishes.
+\item \emph{The identity lattice survives.}  On the neutral family the test
+is computed in a quadratic normal form: after a change of variables the
+function becomes $\langle y',a'\rangle$ (this uses $\mu(s,p)=0$ to show the
+critical value is zero), so vanishing cycles are a rank-one local system
+shifted by $2r$, and the test of $\rho_Z$ becomes ordinary restriction
+$H^*_{G\times F}(U\times D)\to H^*_{G\times F}(D)$, which is split surjective.
+\end{enumerate}
+Combining: $u|_D\smile j^*=0$ with $j^*$ split, so $u|_D=0$ in
+$H^*_{G\times F}(D)=\Hc$.
+
+\section{Part I, stage 2: add loops and count}
+
+Now suppose temporarily that $Q$ has a loop at every vertex with $v_i>0$,
+there is no flavor, and $\nu=\nu_{\det}=\prod_i\det_{V_i}$ (which is always
+regular).  Write $B_0$ for the no-flavor version of $B_F$.
+
+\subsection{The Laurent model}  The key observation is that one loop at a
+vertex contributes to the numerator of \eqref{eq:minuscule} the factor
+$\prod_{a\in I,b\notin I}(x_{ib}-x_{ia})$, which is exactly the Euler class
+of the tangent space of the Grassmannian $\Gr^{\lambda}$ at the fixed point
+$t^{\lambda'}$.  So with a loop at every vertex, the denominators in
+\eqref{eq:minuscule} cancel and $A_0$ embeds in a \emph{polynomial} Laurent
+ring:
+\begin{proposition}[{\cite[Prop.~5.1]{OAI-Hikita}}]
+Let $\mathcal B'$ be the multiset of weights of $N$ with one loop per vertex
+removed, and set $r_\lambda=e^\lambda\prod_{\beta\in\mathcal B'}\beta^{(-\langle\beta,\lambda\rangle)_+}$.
+Then
+\[
+ A_0=\Big(\bigoplus_{\lambda\in\Z^{\Omega}}P\,r_\lambda\Big)^{W},
+ \qquad P=\C[x_{ia}].
+\]
+\end{proposition}
+Both inclusions need proof; the nontrivial one ($\supseteq$) is an
+induction on $\|\lambda\|^2$ using a rearrangement-inequality argument to
+show that each $r_\lambda$ with arbitrary stabilizer-invariant dressing is
+a product of two shorter ones plus lower terms.
+
+\subsection{Filtration by multipartitions and cut ideals}
+A multipartition $m=(m_{i,s})$ of $\bv$ (i.e.\ $\sum_s s\,m_{i,s}=v_i$)
+determines a charge-zero coweight $\lambda_m$ with entries $s-1$ on
+$m_{i,s}$ slots of color $i$.  The paper filters $B_0$ by the number $|l|$
+of nonzero parts and shows that the associated graded piece for $m$ is a
+quotient of
+\[
+ (P_m/J_m)^{W_m},\qquad P_m=\C[x_d: d\text{ a nonzero part}],
+\]
+where $J_m$ is the \emph{cut ideal} generated by
+\[
+ q_S=\prod_{d\in S}x_d^{w_{i(d)}}\prod_{d\in S,\ e\notin S}(x_d-x_e)^{b_{de}},
+ \qquad \varnothing\neq S\subseteq\{\text{parts}\},
+\]
+with $b_{de}=c_{i(d)i(e)}\min(s(d),s(e))$ and $c_{ij}$ the number of arrows between $i,j$ in either direction (after removing the chosen loops).
+The relations $q_S$ come from the vanishing in $B_0$ of products
+$M_\alpha M_\beta$ with $\beta$ of nonzero positive charge: the excess
+weight factor in $r_\alpha r_\beta/r_{\lambda_m}$ is precisely $q_S$.
+These cut ideals are the cocircuit ideals familiar from toric hyperk\"ahler
+cohomology (Hausel--Sturmfels).  The upshot is a coefficientwise bound
+\begin{equation}\label{eq:bound}
+ \Hilb(B_0;q)\ \le\ \sum_{m}q^{\delta_m}\,\Hilb\big((P_m/J_m)^{W_m};q\big),
+\end{equation}
+with explicit shifts $\delta_m$.
+
+\subsection{Matching Hausel's formula}
+The paper computes $\Hilb((P_m/J_m)^{W_m})$ by realizing $P_m/J_m$ as the
+$T_m$-equivariant cohomology of an open ``all slots reachable from the
+framing'' locus in a representation space, stratified by the set of
+unreachable slots.  This gives a recurrence whose generating function is a
+ratio of two $q$-series, and that ratio is exactly the right-hand side of
+Hausel's arithmetic-Fourier-transform formula \cite{Hausel06} for the
+Poincar\'e polynomial of $\mu^{-1}(\mathrm{id})/\!/G$.  A hyperk\"ahler
+rotation identifies that affine quotient with $X_{\det}$ topologically.
+Hence the right side of \eqref{eq:bound} equals $P_{X_{\det}}(q)$.
+Together with the surjection of stage 1:
+
+\begin{proposition}[{\cite[Cor.~6.6]{OAI-Hikita}}]
+With a loop at every vertex and $\nu=\nu_{\det}$, the coefficient map is an
+isomorphism $B_0\cong H^*(X_{\det})$.
+\end{proposition}
+
+\section{Part I, stage 3: remove the loops, then vary everything}
+
+\subsection{Loop removal by a mass deformation}
+For an arbitrary quiver $Q$, let $Q^+$ add one loop at each vertex, and let
+an auxiliary $H=\C^\times$ act with weight $1$ on the new loops only, with
+equivariant parameter $z$.  The previous stage plus a flavor-lift lemma
+(see below) gives $B^+_H\cong H^*_H(X^+)$ as $R_0[z]$-algebras.  Now localize
+at the maximal ideal of $(x,z)=(0,1)$, i.e.\ near zero gauge parameters and
+mass one.
+\begin{itemize}[leftmargin=2em]
+\item \emph{Coulomb side:} the extra loop contributes to each minuscule
+monopole the factor $E_\lambda=\prod(z+x_{ib}-x_{ia})^{(\lambda_{ia}-\lambda_{ib})_+}$,
+which equals $1$ at $(0,1)$, hence is a unit after localization.  So the
+localized Coulomb algebras of $Q$ and $Q^+$ agree, compatibly with the
+charge grading.
+\item \emph{Higgs side:} Brion's localization theorem on the stable
+prequotient $D^+$ (not on the quotient, where $H$-fixed points need
+compensating gauge transformations) shows restriction to $(D^+)^H=D$ is an
+isomorphism after inverting characters nontrivial on $H$.  Stability
+restricts correctly under the closed embedding $T^*N\subset T^*N^+$.
+\end{itemize}
+This gives equality of the two ideals in $R_0$ after localizing at the
+graded origin.  Both ideals are homogeneous, and a homogeneous ideal is
+determined by its localization at the origin (if $sh\in I$ with
+$s(0)\neq0$, take the component of degree $\deg h$).  So the ideals are
+equal globally.  This is Prop.~7.3: the point is that one does not need
+to know that a ``generic'' isomorphism specializes.
+
+\subsection{Other stabilities}  All regular $\nu$ give quotients with the
+same Betti numbers (Lemma 7.1): a hyperk\"ahler rotation identifies
+$X_\nu$ with the affine quotient $\mu^{-1}(c\nu)/\!/G$, and the compactly
+supported Betti numbers of the fibers of $\{\mu=\zeta\}/\!/G\to\mathfrak c$
+are constant on a dense open set that every real ball meets.  So for any
+regular $\nu$, the surjection $B_0\twoheadrightarrow H^*(X_\nu)$ of stage 1
+is between spaces of the same finite dimension.
+
+\subsection{Flavor lift}  If $B_0\cong H^*(X)$ then $B_F\cong\Hc$ for any
+$F$: $\Hc$ is free over $\C[\mathfrak f]$ (Leray--Hirsch, using
+$H^{\mathrm{odd}}=0$), $B_F$ base-changes to $B_0$ (an even-strata
+argument on the space of triples), and a graded Nakayama argument kills
+the kernel.
+
+\medskip
+This completes Part I: $B_F\cong\Hc$ for all data.
+
+\section{Part II: cocharacter-fixed versus torus-fixed}
+
+\begin{proposition}[{\cite[Prop.~8.4]{OAI-Hikita}}]
+For regular $\nu$, the quotient map $\C[Y_{\mathfrak f}^\nu]\to B_F$ is an
+isomorphism.
+\end{proposition}
+Equivalently: every nontrivial minuscule monopole already lies in the ideal
+generated by monopoles of nonzero $\nu$-weight.  If $\nu\cdot\bb\neq0$ for all
+$0<\bb\le\bv$ this is immediate; the content is the hyperplane case.
+
+\noindent\emph{Idea: complementary monopoles.}  Adjoin a framing vertex
+$\infty$ of dimension $1$ with $w_i$ arrows $i\to\infty$, making an
+\emph{unframed} quiver $\widehat Q$ with dimension vector $\bd=(\bv,1)$ and
+the same representation space.  The extra $\C^\times$ is central and acts
+trivially, so
+\[
+ A_{\widehat Q}\cong A_F\otimes\C[\xi,z^{\pm1}],
+\]
+where $z$ is the invertible monopole of charge $\bd$ (``translate every
+coweight entry by one'').  Extend $\nu$ by $\widehat\nu_\infty=-\sum\nu_iv_i$
+so that $\widehat\nu\cdot\bd=0$; then $z$ has weight zero and the cocharacter
+quotients are compatible.  Translation by $z$ gives the identity
+\[
+ M^+_{\bb,p}=z\,M^-_{\bd-\bb,p}
+\]
+between a positive minuscule monopole of charge $\bb=(\bb',0)$ and the
+\emph{complementary} negative one.  So if $M^+_{\bb,p}$ survived in the
+$\widehat\nu$-fixed quotient, so would $M^-_{\bd-\bb,p}$.
+
+Now use the polynomial-form cohomological Hall algebra of the tripled
+quiver (Jindal--Negu\c t), together with Tsymbaliuk's difference-operator
+realization of the shuffle algebra, to prove (Lemma 8.2): every minuscule
+monopole of charge $\bb$ is an $R$-combination of words whose factors have
+charges $\gamma_h\in\Delta_{\widehat Q}$ (the support of Kac's polynomials
+$A_{\widehat Q,\gamma}(q)$, i.e.\ dimension vectors admitting absolutely
+indecomposable representations) summing to $\bb$.  A word survives the
+cocharacter quotient only if each factor has $\widehat\nu$-weight zero.  So
+survival of both complementary monopoles decomposes $\bd=\sum_h\gamma_h$
+into at least two Kac-support vectors each orthogonal to $\widehat\nu$.
+
+Finally (Lemma 8.3, essentially Crawley-Boevey's lifting lemma): for
+$\gamma\in\Delta_{\widehat Q}$ with $\widehat\nu\cdot\gamma=0$, the
+hyperk\"ahler moment fiber $\mu_\C^{-1}(0)\cap\mu_{\mathbb R}^{-1}(\tau_{\widehat\nu})$
+is nonempty.  The direct sum of such points for the blocks $\gamma_h$ is
+$\widehat\nu$-semistable with a stabilizer containing $k\ge2$ independent
+scalar circles; after removing the ineffective diagonal one, the stabilizer
+is still positive-dimensional.  This contradicts regularity of $\nu$
+(including when the stable locus is empty: it would produce a semistable
+point where there is none).  Hence no nontrivial minuscule monopole
+survives, and the two ideals coincide.
+
+\section{Assessment}\label{sec:assessment}
+
+\subsection*{Inputs from the literature}
+BFN abelianization and minuscule generation (BFN, Weekes); Kirwan
+surjectivity for quiver varieties (McGerty--Nevins); Hausel's Betti-number
+formula; hyperk\"ahler rotation and the topological Kempf--Ness theorem;
+Brion's subgroup localization; constructible-sheaf formalism for vanishing
+cycles (Maxim--Sch\"urmann, Massey); Kac polynomials and Crawley-Boevey's
+lifting criterion; the polynomial-form CoHA and shuffle-to-difference-operator
+maps (Jindal--Negu\c t, Tsymbaliuk).  The paper cites Krylov--Shlykov
+\cite[Remark 1.15]{KS25} for related deformation arguments and
+Dumanski--Krylov \cite[Prop.~2.3]{DK25} for the prequotient localization
+viewpoint.
+
+\subsection*{What appears to be new}
+\begin{enumerate}[leftmargin=2em]
+\item The \emph{stable-pair vanishing-cycle test} ($\S\S3$--$4$): a
+finite-dimensional device turning a Coulomb relation into a statement
+about sections of bundles on $\PP^1$, where stability of the value at
+$\infty$ forces the degree inequality that kills the first step of every
+neutral word.
+\item The \emph{added-loop Laurent model} ($\S5$): one loop per vertex
+cancels the Grassmannian Euler denominators, giving a polynomial model in
+which an explicit multipartition filtration and cut ideals bound $B_0$.
+\item The \emph{reachability stratification} ($\S6$) that computes the cut
+quotients and matches Hausel's $q$-series exactly.
+\item The \emph{homogeneity descent} ($\S7$) that removes the auxiliary
+loop without any genericity assumption.
+\item The \emph{complementary-monopole argument} ($\S8$) for the
+cocharacter-versus-torus comparison, using Kac support plus regularity.
+\end{enumerate}
+I have not checked any of these in detail; items 1 and 5 involve the most
+delicate inputs (equivariant vanishing cycles with singular bases; signs and
+specializations in the CoHA maps) and are where I would look first for
+gaps.
+
+\subsection*{Scope}
+The theorem is for $G=\prod\GL(V_i)$ and $N$ of quiver type.  Loops,
+multiple arrows, arbitrary flavor, and all regular stabilities are allowed.
+Not covered: the quantized statement; other reductive gauge groups (the
+paper cites Hoang--Krylov--Matvieievskyi, Ex.~6.7, for a failure outside
+the quiver setting); $K$-theory.
+
+\subsection*{A question}
+The added-loop trick is a special case of adding a copy of the adjoint
+representation: for any $G$, a massless adjoint summand contributes to the
+abelianized monopole of \emph{any} coweight $\lambda$ the factor
+$\prod_\alpha\alpha^{(-\langle\alpha,\lambda\rangle)_+}$, which cancels the Euler
+class of $T_{t^\lambda}\Gr^\lambda_G$ up to sign.  So the Laurent-model step
+and the mass-deformation step of $\S\S5,7$ look as if they could be run for
+general $(G,N)$.  The other ingredients---minuscule generation, Kirwan
+surjectivity, the cut-ideal count against Hausel's formula, and the
+Kac-support argument of Part II---are all quiver-specific as written, and
+the hypothesis of regularity rarely holds when $G$ has small center.
+Whether some version of the argument extends is, as far as these notes go,
+open.
+
+\begin{thebibliography}{9}
+\bibitem{OAI-Hikita} OpenAI, \emph{The equivariant cohomological Hikita
+conjecture for arbitrary quivers}, OpenAI Math Release preprint, 24 September 2026.
+\url{https://github.com/openai/math/blob/main/preprints/The-equivariant-cohomological-Hikita-conjecture-for-arbitrary-quivers-September-24-2026/main.pdf}
+\bibitem{DK25} I.~Dumanski, V.~Krylov, \emph{$K$-theoretic Hikita conjecture for quiver gauge theories}.
+\bibitem{Hausel06} T.~Hausel, \emph{Betti numbers of holomorphic symplectic quotients via arithmetic Fourier transform}, PNAS 2006.
+\bibitem{Hikita17} T.~Hikita, \emph{An algebro-geometric realization of the cohomology ring of Hilbert scheme of points in the affine plane}, IMRN 2017.
+\bibitem{KS25} V.~Krylov, P.~Shlykov, \emph{Hikita--Nakajima conjecture for the Gieseker variety}.
+\bibitem{MN18} K.~McGerty, T.~Nevins, \emph{Kirwan surjectivity for quiver varieties}, Invent.\ Math.\ 2018.
+\bibitem{Weekes19} A.~Weekes, \emph{Generators for Coulomb branches of quiver gauge theories}.
+\end{thebibliography}
+
+\end{document}
