@@ -6,6 +6,7 @@ A reader's guide to the OpenAI preprint
 participants in the SLMath program on quantum field theory.
 
 - [`hikita-summary.pdf`](hikita-summary.pdf) — the guide (7 pages).
+- [`VERIFICATION.md`](VERIFICATION.md) — section-by-section verification notes: what was checked, what passed, what should be expanded.
 - [`NOTES.md`](NOTES.md) — working notes and open questions.
 - [`openai-preprint/`](openai-preprint/) — the preprint itself (PDF and LaTeX source), copied verbatim from `openai/math` under its Apache-2.0 license; see `SOURCE.md` there.
 

@@ -40,6 +40,17 @@ full-topological-torus fixed scheme.  Two independent halves:
    Crawley-Boevey lifting + direct sum gives a semistable point with
    positive-dimensional stabilizer, contradicting regularity.
 
+## Verification (2026-10-06)
+
+Seven independent adversarial readings, one per section; see
+`VERIFICATION.md`.  [checked] No error or load-bearing gap found; ~15
+explicit computations agree; external citations that were fetched (BFN18,
+Weekes, Hoskins, MN18, Tsymbaliuk, Jindal–Neguț) say what the paper says.
+Issues are all presentational (16 listed).  Hausel's formula was checked
+from memory, pinned by the Jordan v=1 sign check.  The one convergent flag
+(degree convention in Prop 2.2) resolved: it is BFN Lemma 2.6's grading,
+differing from 2Δ(λ) by ⟨det N, λ⟩ — charge-dependent only, harmless.
+
 ## Precedent for the added-loop step
 
 The paper does not claim the trick is new and cites no direct precedent.
