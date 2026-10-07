@@ -70,3 +70,5 @@ loops this way for Hikita before — not searched.
 ## Files
 
 - `hikita-summary.tex/.pdf` — reader's guide for SLMath QFT participants.
+- `openai-preprint/` — verbatim copy of the preprint directory (PDF, source,
+  OpenAI's README with BibTeX, the CONTENTS.md entry, Apache-2.0 LICENSE).

@@ -7,6 +7,7 @@ participants in the SLMath program on quantum field theory.
 
 - [`hikita-summary.pdf`](hikita-summary.pdf) — the guide (7 pages).
 - [`NOTES.md`](NOTES.md) — working notes and open questions.
+- [`openai-preprint/`](openai-preprint/) — the preprint itself (PDF and LaTeX source), copied verbatim from `openai/math` under its Apache-2.0 license; see `SOURCE.md` there.
 
 The preprint is unrefereed and has no Lean formalization.  The guide was
 drafted by Claude at Ben Webster's request from the LaTeX source; it
