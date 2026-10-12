@@ -1,0 +1,2342 @@
+\documentclass[11pt]{amsart}
+
+\input{preamble}
+
+\addbibresource{references.bib}
+
+%%% Project-specific macros %%%
+\nc{\A}{\mathbb{A}}
+\nc{\OO}{\mathcal{O}}
+\nc{\Gr}{\mathrm{Gr}}
+\nc{\Hilb}{\mathrm{Hilb}}
+\nc{\IC}{\mathrm{IC}}
+\nc{\Av}{\mathrm{Av}}
+\nc{\bv}{\mathbf{v}}
+\nc{\bw}{\mathbf{w}}
+\nc{\bb}{\mathbf{b}}
+\nc{\one}{\mathbf{1}}
+\nc{\pre}[1]{\cite[#1]{openaiEquivariantCohomological2026}}
+\nc{\Pol}{S}
+\nc{\Zm}{Z_m}
+
+% Details: routine verifications that a reader could reconstruct.  They are
+% hidden by default; change \detailsfalse to \detailstrue to show them.
+\usepackage{comment}
+\newif\ifdetails
+\detailsfalse
+\ifdetails
+\newenvironment{details}{\par\color{black!60!green}\noindent\textbf{Details.}\ }{\par}
+\else
+\excludecomment{details}
+\fi
+
+\title[Hikita's conjecture for quiver gauge theories]{Hikita's conjecture for quiver gauge theories:\\ after the slop}
+
+
+\begin{document}
+
+\begin{abstract}
+Let $X$ be a Nakajima quiver variety, with loops and multiple arrows
+allowed, at a generic stability parameter, and let $A$ be the Coulomb
+branch of the same gauge theory.  Using the comparison map announced by
+Botta and Tamagni, we explain a proof that the B-algebra of $A$ for the
+cocharacter given by the stability parameter is isomorphic to $H^*(X)$,
+equivariantly for flavor symmetries, and that the B-algebra of the quantized
+Coulomb branch is isomorphic to $H^*_{\C^\times}(X)$.  The theorem and the
+overall strategy are due to \cite{openaiEquivariantCohomological2026}.  The main change is a
+new proof of the dimension count for quivers with a loop at every vertex, by
+restriction to Levi subgroups, which does not use Hausel's formula.  On the
+quiver variety side this count becomes the decomposition theorem for the map
+recording the characteristic polynomials of the loops.
+\end{abstract}
+
+\maketitle
+
+\section{Introduction}\label{sec:intro}
+
+These notes are aimed at producing a human readable and checked proof of the Hikita conjecture for quiver gauge theories.  This builds on the claimed proof in the ``slop dump'' of Oct.\ 7, 2026
+ \cite{openaiEquivariantCohomological2026}, an unrefereed
+preprint by OpenAI dated 24 September 2026.  
+
+I should emphasize that this article is {\it not} a simple rewriting of the argument in that document, nor does it constitute an endorsement of the lazy approach of that dump, or the many profound violations of research ethics involved in it.  It was a deeply irresponsible and selfish action carried out without regard to the consequences for individuals, or the very research apparatus that, of course, was a necessary precondition for the existence of the AI system that produced it.  
+
+However, given the existence of a claimed proof, I think it is in the interest of the mathematical community as a whole to have access to a version of the argument that is readable and checkable by humans.  Given the difficulty of understanding the original argument of the OpenAI preprint, the only practical way of doing this was to use AI itself, but in this case guided by a human who understands the field.  Thus, this paper was written with considerable assistance from Claude in understanding the arguments of the OpenAI preprint, finding references in the literature, and rewriting the argument in a more readable form.   
+
+\Ben{At the moment I don't want to say that humans have verified the full argument, since that isn't true.  I *will*.}
+
+Fix a finite quiver $Q$, loops and multiple arrows allowed, and dimension
+and framing vectors $\bv,\bw\in\Z_{\ge0}^{Q_0}$.  Put
+\[
+ G=\prod_{i\in Q_0}\GL(V_i),\qquad
+ N=\bigoplus_{a\colon i\to j}\Hom(V_i,V_j)\oplus\bigoplus_i\Hom(W_i,V_i).
+\]
+Let $F$ be a torus acting on $N$ and commuting with $G$, and let
+$\C^\times_\hbar$ act on $T^*N$ with weight $\frac12$ on both $N$ and $N^*$
+(through its double cover), so that the symplectic form has weight $1$. 
+
+For a choice of character $\nu\in\Z^{Q_0}$, let $X_\nu$ be the Nakajima quiver variety with this stability parameter, and let $A_{F,\hbar}$ be the quantized Coulomb branch of $(G,N)$ with flavor symmetry $F$.  Let $B^\nu(A_{F,\hbar})$ be the B-algebra of $A_{F,\hbar}$ for the action induced by the cocharacter $\nu$ of $\pi_1(G)^\vee$.
+\begin{theorem}\label{thm:main}
+Let $\nu$ be generic.  Then we have an isomorphism of graded algebras
+\[B^\nu(A_{F,\hbar})\cong H^*_{F\times\C^\times_\hbar}(X_\nu).\]
+\end{theorem}
+The existence of a surjective map $B^\nu(A_{F,\hbar})\to H^*_{F\times\C^\times_\hbar}(X_\nu)$ follows immediately from work of Botta and Tamagni \cite{bottaQuasimapCritical2026}. One of the outrageous aspects of the OpenAI preprint is that they effectively rewrote the argument of Botta and Tamagni's paper without giving them proper credit (and that OpenAI clearly did not apply sufficient due diligence to avoid this happening in many of their preprints).  
+We only briefly summarize this construction.
+
+Applying the graded Nakayama lemma, to complete the proof of Theorem~\ref{thm:main}, we only need to show an inequality 
+\[\dim B^\nu(A)\leq \dim H^*(X_\nu).\]
+
+Together with the localization theorem, this lemma gives us a useful reduction: if \cref{thm:main} applies for a given choice of $Q$, $\bv$, $\bw$, $F$ and $\nu$, then every choice of point in the Lie algebra $\ff$ of $F$ gives a vector field on $X_\nu$ whose fixed point set is a union of quiver varieties for gradings of the same quiver, and \cref{thm:main} applies to each of these fixed point components.  
+
+This brings us to one of the genuinely interesting approaches taken in the OpenAI preprint: they reduce the proof of the dimension inequality to the case of quivers with a loop at every vertex; we have consulted with many experts, and none can point to a place in the literature where this approach was used.  I wish I understood the importance of this reduction better, but we find two explicit results which might help the reader see how it is helpful.  In this case we have an explicit formula for a nonnegative integer $H(Q,\bv,\bw)$ which we need to verify
+\begin{enumerate}
+\item $\dim B^\nu(A)\le H(Q,\bv,\bw)$.  This comes from a filtration of
+$B^\nu(A)$ whose graded pieces are sums, over multipartitions of $\bv$, of
+quotients of the invariants of finite groups acting on the cohomology rings
+of hypertoric varieties (Proposition~\ref{prop:filt}, which is
+\pre{Prop.~5.2}).  Here the loops are used on the Coulomb side: they supply
+the roots of $G$ as weights of $N$, so that the Coulomb branch is the
+Weyl-invariant part of an abelian Coulomb branch, with no root denominators
+(Proposition~\ref{prop:teleman}).
+\item $H(Q,\bv,\bw)\le\dim H^*(X_\nu)$.  The preprint deduces this from
+Hausel's formula \cite{hauselBettiNumbers2006} for the Betti numbers of $X_\nu$,
+together with an identity for the cohomology of toric varieties proved by
+Kirwan's method \pre{\S6}; Remark~\ref{rem:hausel} explains how these fit
+together, following notes of Nakajima \cite{nakajimaMultipartitionSpaces2026}.  We
+give a different argument, which does not use Hausel's formula.  
+
+The filtration of $B^{\nu}(A)$ by subspaces $F_L$, indexed by the number $L$ of parts of a multipartition, induces a filtration of $H^*(X_\nu)$ by subspaces $F'_L$.  Thus, we only need to show that the induced map $F_L/F_{L-1}\to F'_L/F'_{L-1}$ is injective.  We prove this by reduction to a Levi subgroup $M$ of $G$; this gives us a new quiver variety $X(M)$, and turns the piece of $F_L/F_{L-1}$ for a multipartition $m$ into a level module over $H^*_M(\mathrm{pt})$.  Of course, we only need to show injectivity on its socle, which is its top degree piece.  Thus, we only need to show that $H^*(X(M))$ has a sufficiently large top degree piece, and ultimately we construct by hand enough distinct core components of $X(M)$ to show this.
+\end{enumerate}
+Here
+\[
+ H(Q,\bv,\bw)=\sum_m\dim\big(\Pol_m/J_m\big)^{\cW_m},
+\]
+the sum over multipartitions $m$ of $\bv$, where $\Pol_m/J_m$ is the
+cohomology ring of a hypertoric variety and $\cW_m$ is a product of symmetric
+groups acting on it (\S\ref{ss:notation}).  For example, for the Jordan quiver
+with $\bw=1$, so that $X_\nu=\Hilb^n(\C^2)$, every summand is $1$, and
+$H(Q,n,1)$ is the number of partitions of $n$.  Both sides of~(1) and~(2) are
+independent of the generic parameter $\nu$ (Lemmas~\ref{lem:generic}
+and~\ref{lem:betti}), so we work at determinant stability.  Keeping track of
+degrees gives the Poincar\'e polynomial of $X_\nu$ as well
+(Theorem~\ref{thm:loops}); Example~\ref{ex:A2loops} works out a small case.
+
+The loops can then be removed.  Given $Q$, add a loop $\ell^+_k$ at every
+vertex, with a flavor torus $\C^\times_u$ scaling it.  As above, the quiver
+variety $X_\nu$ of $Q$ is a component of the $\C^\times_u$-fixed locus of the
+quiver variety of the new quiver, the one where the added loops vanish.  The
+localization theorem, and a matching statement on the Coulomb side after
+localizing at $u=1$, transfer the theorem from the new quiver to $Q$
+(Proposition~\ref{prop:loopremoval}, which is \pre{Prop.~7.3}).
+
+On the quiver variety side, the multipartitions have a direct meaning.  The
+characteristic polynomials of the loops give a map $\chi$ from $X_\nu$ to a
+space of tuples of polynomials, and the summand of $m$ in $H(Q,\bv,\bw)$ comes
+from the stratum where the eigenvalues of the loops have multiplicities given
+by $m$: the decomposition theorem for $\chi$, read at one point, gives
+$H^*(X_\nu)$ as a sum over multipartitions (Theorem~\ref{thm:higgs}).  We do
+not use this in the proof.
+
+
+\subsection{Set-up}\label{ss:setup}
+We now make the objects above precise.  With $\C^\times_\hbar$ acting on $T^*N$
+as above, on the Coulomb side $\hbar$ is the equivariant parameter of loop rotation
+combined with the scaling of $N$ with weight $\frac12$, as in
+\cite[\S\S2.2, 5.7]{hilburnBFNSpringer2023}.  Other conical actions in the literature, such as
+that of \cite[\S7.2]{KTWWY}, differ from this one by a rescaling and a
+cocharacter of the torus scaling the framing, which shifts the flavor
+parameters by multiples of $\hbar$.  Put $R=H^*_{G\times
+F}(\mathrm{pt})$ and $R_\hbar=R[\hbar]$, and let $\mu\colon T^*N\to\mathfrak g^*$
+be the moment map.
+
+\emph{Stability.}  A point of $T^*N$ is a representation of the doubled
+quiver of $Q$ on the $V_i$, together with maps $i_k\colon W_k\to V_k$ and
+$j_k\colon V_k\to W_k$ at each vertex $k$.  Following \cite[\S1]{crawley-boeveyGeometryMoment2001}, we regard it as a
+representation of dimension $(\bv,1)$ of the doubled quiver of $\hat Q$,
+which is $Q$ with one more vertex $\infty$ and $w_i$ arrows from $\infty$ to
+$i$.  For $\nu\in\Z^{Q_0}$ put $\hat\theta=(\nu,-\nu\cdot\bv)$.  A point is
+\emph{$\nu$-semistable} if $\hat\theta\cdot\dim S\ge0$ for every
+subrepresentation $S$, and \emph{$\nu$-stable} if moreover equality holds
+only for $S=0$ and for the whole representation \cite{kingModuliRepresentations1994}.  The same
+inequalities define $\theta$-stability, and the quiver variety $X_\theta$
+below, for real $\theta\in\mathbb R^{Q_0}$.  Call $\nu$ \emph{generic} if
+$\nu\cdot\bb\neq0$ for all $0<\bb\le\bv$.  Then every $\nu$-semistable point is
+stable, with trivial stabilizer in $G$, and the semistable locus depends only
+on the signs of the $\nu\cdot\bb$.
+\begin{details}
+The subrepresentations have dimensions $(\bb,0)$ and $(\bb,1)$ with
+$0\le\bb\le\bv$, on which $\hat\theta$ takes the values $\nu\cdot\bb$ and
+$-\nu\cdot(\bv-\bb)$.  So for generic $\nu$, $\hat\theta\cdot\dim S\neq0$ unless
+$S$ is $0$ or the whole representation, and the automorphisms of a stable
+point are scalars that are the identity at $\infty$.
+\end{details}
+For generic $\nu$ the quiver variety
+$X_\nu=\mu^{-1}(0)^{\nu\text{-ss}}/G$ is smooth, and
+$H^*_{G\times F}(\mu^{-1}(0)^{\nu\text{-ss}})=H^*_F(X_\nu)$.  The
+tautological bundle $\cV_i$ on $X_\nu$ comes from the $G$-module $V_i$.  The
+\emph{Kirwan map} $\kappa\colon R\to H^*_F(X_\nu)$ is restriction from
+$H^*_{G\times F}(\mathrm{pt})$ to $H^*_{G\times F}(\mu^{-1}(0)^{\nu\text{-ss}})$; it
+sends a symmetric polynomial in the Chern roots of the $V_i$ to the same
+polynomial in the $F$-equivariant Chern roots of the $\cV_i$.  Determinant
+stability $\nu_{\det}=(1,\dots,1)$ is generic.
+
+This is stability for the character $\chi_\nu=\prod_i\det_{V_i}^{\nu_i}$, with
+semi-invariants $f(g\cdot x)=\chi_\nu(g)^nf(x)$, as in
+\cite[\S2.1]{hilburnBFNSpringer2023}; for $\nu_{\det}$ it says that the images of the $W_k$
+generate $V$, by~\ref{I:cyc}.  The stability condition of Nakajima, under which no
+nonzero invariant subspace lies in the kernel of the maps $j_k$, is
+$\nu=(-1,\dots,-1)$ in this convention \cite[Lemma~3.8]{nakajimaQuiverVarieties1998}; compare
+\cite[Rem.~7.12]{hilburnBFNSpringer2023}.
+
+\emph{Coulomb branches.}  Let $A_{F,\hbar}$ be the quantized Coulomb branch
+of $(G,N)$ with flavor symmetry $F$ \cite{BFN}, and $A_F=A_{F,\hbar}/\hbar$,
+which is commutative.  Both are graded by $\pi_1(G)=\Z^{Q_0}$ through the
+components of the affine Grassmannian; we call this degree the
+\emph{charge}.  The charge-zero part contains $R_\hbar$, respectively $R$,
+as the classes supported over the base point.  For a charge $c$ put
+$\deg_\nu(c)=-\sum_i\nu_ic_i$, and let $A_{[k]}$ be the sum of the charge
+components with $\deg_\nu=k$.  The \emph{B-algebra} is
+\[
+ B^\nu(A_{F,\hbar})=A_{[0]}\Big/\textstyle\sum_{k>0}A_{[-k]}A_{[k]},
+\]
+and $B^\nu_F$ is the same construction for $A_F$.  For $\hbar\neq0$ the
+order of the factors matters: reversing it amounts to replacing $\nu$ by
+$-\nu$.  Our $\nu$-degree is the grading of \cite[\S5.1.6]{hilburnBFNSpringer2023} for the
+character $\chi_\nu$, and $B^\nu$ is the B-algebra of \cite[\S5.7]{hilburnBFNSpringer2023}
+and \cite[\S3.5]{KTWWY}.  As $A_F$ is
+commutative, $B^\nu_F$ is the
+coordinate ring of the fixed-point scheme of the cocharacter $\nu$ of the
+torus $\pi_1(G)^\vee$, which acts on $\Spec A_F$ through the charge.  The
+fixed-point scheme of the whole torus has coordinate ring
+$B_F=A_F/\langle A_F^{(c)}:c\neq0\rangle$, where $A_F^{(c)}$ is the part of
+charge $c$; it is a quotient of $B^\nu_F$.  We write $A_0$, $B^\nu_0$ and $B_0$
+when $F$ is trivial.
+
+
+\emph{The statement.}  Our proof uses Theorem~\ref{thm:map}, the
+comparison map announced by Botta and Tamagni.  Setting $\hbar=0$ in
+Theorem~\ref{thm:main} gives $B^\nu_F\cong H^*_F(X_\nu)$; more precisely, the
+maps $R\to B^\nu_F$ and $\kappa$ are surjective with the same kernel
+(Theorem~\ref{thm:classical}).  This classical statement is the generic case
+of \pre{Thm.~1.1}, which also allows $\nu$ on a hyperplane $\nu\cdot\bb=0$
+when every semistable point is still stable.  We do not treat that case.
+With $F$ trivial it is Hikita's conjecture
+\cite{hikitaAlgebroGeometricRealization2016}.  Theorem~\ref{thm:main} is its
+equivariant and quantized form, due to Nakajima \cite[Conj.~8.9]{KTWWY}; with
+the conventions of \S\ref{ss:setup}, it is
+\cite[Conj.~5.26]{hilburnBFNSpringer2023} for quiver gauge theories.
+
+\emph{Known cases.}  Hikita proved the case with $F$ trivial for Hilbert
+schemes of points in the plane, type A Spaltenstein varieties and smooth
+hypertoric varieties \cite{hikitaAlgebroGeometricRealization2016}.  For ADE quivers it is
+\cite[Thm.~8.1]{KTWWY}, whose proof uses an isomorphism of Zhu that is
+known in types A, D and $E_6$ and in some cases of types $E_7$ and $E_8$
+\cite[Rem.~2.18, Cor.~2.17]{dumanskiKtheoreticHikita2025}.  With flavor, the classical statement is known for the
+Gieseker variety, the Jordan quiver with framing $r$
+\cite[Thm.~1.14]{krylovHikitaNakajimaConjecture2025}, and for type A quivers and the same ADE
+cases \cite[Cors.~2.15, 2.17]{dumanskiKtheoreticHikita2025}.  The quantized statement is known for
+smooth hypertoric varieties \cite[Thm.~1.2, Rem.~5.3]{kamnitzerQuantumHikita2021}.  Dinkins, Karpov
+and Krylov prove a refined quantum Hikita conjecture for ADE quivers framed at
+minuscule nodes, including all type A quivers and the Jordan quiver
+\cite[Thm.~B]{dinkinsQuantumHikita2026}.
+
+\subsection{The argument}\label{ss:route}
+\S\ref{sec:map} shows that $R_\hbar\to B^\nu(A_{F,\hbar})$ is onto and states
+the comparison map.  \S\ref{sec:loops} proves Theorem~\ref{thm:loops}, the case
+of a loop at every vertex, at determinant stability and without flavor, by
+establishing~(1) and~(2) above.  \S\ref{sec:deform} adds flavor and $\hbar$ by
+graded Nakayama (Lemma~\ref{lem:flavor}), removes the loops
+(Proposition~\ref{prop:loopremoval}) and changes the stability parameter
+(Lemma~\ref{lem:betti}); this proves Theorem~\ref{thm:main}
+(Theorem~\ref{thm:classical}).  \S\ref{sec:higgs} describes \S\ref{sec:loops}
+on the quiver variety side: the multipartition filtration becomes the support
+filtration of the decomposition theorem for $\chi$.  It is not used
+elsewhere.
+
+\emph{Status.}  The argument is complete given the cited results and
+Theorem~\ref{thm:map}, which is announced in \cite{bottaQuasimapCritical2026}.
+\S\ref{sec:status} lists what remains to be checked.
+
+\subsection{Inputs}\label{ss:inputs}
+We use the following results.
+\begin{enumerate}[leftmargin=2.6em,label=(I\arabic*)]
+\item\label{I:gen} \emph{Generation} \cite[Prop.~3.1,
+Rem.~3.3]{weekesGeneratorsCoulomb2019}.  $A_{F,\hbar}$ is generated over $R_\hbar$ by the
+dressed minuscule monopole operators $M_{\lambda,p}$, for dominant coweights
+$\lambda$ of $G$ with all entries in $\{0,1\}$ or all in $\{0,-1\}$.  Here the
+orbit $\Gr^\lambda$ is closed, $M_{\lambda,p}$ is the class of the part of
+the BFN space of triples over $\Gr^\lambda$ multiplied by the dressing $p$, and
+$p$ runs over $H^*_{G\times F}(\Gr^\lambda)=H^*_{T\times F}(\mathrm{pt})^{\cW_\lambda}$,
+with $T\subseteq G$ the diagonal torus and $\cW_\lambda$ the stabilizer of
+$\lambda$ in the Weyl group.  The same holds for $A_F$ over $R$.  The proof generates the associated graded of the
+filtration by support in the orbit closures $\overline{\Gr^\Lambda}$
+\cite[Prop.~6.8]{BFN}.  So the filtered piece $A_{\le\Lambda}$ is spanned
+by words in the generators whose coweights sum to at most $\Lambda$.
+\item\label{I:base} \emph{Base change} \cite[Prop.~3.22]{BFN}.
+$A_{F,\hbar}$ is free over $H_{F,\hbar}=H^*_{F\times\C^\times_\hbar}(\mathrm{pt})$,
+and $A_{F,\hbar}\otimes_{H_{F,\hbar}}\C=A_0$; likewise
+$A_{F,\hbar}\otimes_{H_{F,\hbar}}H^*_F(\mathrm{pt})=A_F$.  The flavor parameters
+and $\hbar$ have charge zero, and the B-algebra is a cokernel, so taking
+B-algebras commutes with these base changes.
+\item\label{I:kirwan} \emph{Kirwan surjectivity} \cite[Thm.~1.2,
+Cor.~1.5]{mcgertyKirwanSurjectivity2018}.  $\kappa$ is surjective, $H^{\mathrm{odd}}(X_\nu)=0$, and
+$H^*_F(X_\nu)$ is free over $H^*_F(\mathrm{pt})$.  The same holds with
+$F\times\C^\times_\hbar$ in place of $F$.
+\item\label{I:rot} \emph{Hyperk\"ahler rotation} \cite[Prop.~3.18]{bellamySymplecticResolutions2021}.
+For generic $\theta\in\mathbb R^{Q_0}$, $X_\theta$ is homeomorphic to the
+affine quotient $\mu^{-1}(-i\theta)/\!/G$.  Here $\C^{Q_0}$ is identified with
+the center of $\mathfrak g^*\cong\mathfrak g$ by $\zeta\mapsto\sum_i\zeta_i\,\mathrm{id}_{V_i}$.  Loops are allowed.
+\item\label{I:cyc} \emph{Determinant stability} \cite[Lemma~7.1]{hilburnBFNSpringer2023}.
+A point of $T^*N$ is $\nu_{\det}$-semistable if and only if the images of the
+$W_i$ generate $V=\bigoplus_iV_i$ under the arrows of the doubled quiver.
+Loops are allowed.
+\begin{details}
+$\nu_{\det}\cdot\bb>0$ for $\bb\neq0$, so a subrepresentation of
+dimension $(\bb,0)$ never destabilizes, and one of dimension $(\bb,1)$, which
+contains the images of the $W_i$, destabilizes unless $\bb=\bv$.
+\end{details}
+\item\label{I:hypertoric} \emph{Hypertoric varieties}
+\cite{hauselToricHyperKahler2002}.  Let a torus $S$ act linearly on a vector space $U$,
+with weights $u_1,\dots,u_n$ (repeated according to multiplicity), none of them
+zero.  Let $\mu\colon T^*U\to\mathrm{Lie}(S)^*$ be the moment map and $\theta$ a
+generic character of $S$.  The \emph{hypertoric variety} is
+$\mu^{-1}(0)/\!\!/_\theta S$.  A \emph{cocircuit} is a minimal set of weights
+whose complement does not span the span of all the $u_i$.  Suppose the $u_i$
+span $X^*(S)\otimes\Q$.  Then:
+\begin{enumerate}[label=(\alph*)]
+\item if the $u_i$ are unimodular, the hypertoric variety is smooth, of
+dimension $2(n-\dim S)$ when it is nonempty \cite{hauselToricHyperKahler2002};
+\item its cohomology ring is $H^*_S(\mathrm{pt})$ modulo the ideal generated by
+the products $\prod_{u\in C}u$ over the cocircuits $C$
+\cite[Thm.~1.1]{hauselToricHyperKahler2002};
+\item this ring vanishes above degree $n-\dim S$, and it is level in the
+sense of~\ref{I:alg}(c) \cite[Thm.~7.1, Prop.~6.7]{hauselToricHyperKahler2002},
+\cite[Thm.~III.3.4]{stanleyCombinatoricsCommutative1983};
+\begin{details}
+The ring is $\C[\partial]/\mathrm{Ann}(\mathrm{vol}_1,\dots,\mathrm{vol}_r)$,
+where $H^*_S(\mathrm{pt})=\C[\partial]$ acts by differentiation and the $\mathrm{vol}_i$ are
+the volume polynomials of the maximal bounded regions of the hyperplane
+arrangement of the $u_i$ and $\theta$, all homogeneous of degree $n-\dim S$
+\cite[Thm.~7.1, Prop.~6.7]{hauselToricHyperKahler2002}.  An operator of degree above
+$n-\dim S$ kills every $\mathrm{vol}_i$, and the ring is level by Stanley's theorem
+\cite[Thm.~III.3.4]{stanleyCombinatoricsCommutative1983}, as in the proof of
+\cite[Thm.~7.1]{hauselToricHyperKahler2002}.
+\end{details}
+\item the top Betti number is the top $h$-number of the matroid of the
+arrangement \cite[Cor.~8.4]{hauselToricHyperKahler2002}, which is dual to the matroid of
+the $u_i$; so it is the cographic matroid when the $u_i$ are the vectors of a
+graph.  For a matroid $\mathcal M$ of rank $r$ the top $h$-number is
+$T_{\mathcal M}(0,1)$, and $T_{\mathcal M^*}(x,y)=T_{\mathcal M}(y,x)$, where $T$ is
+the Tutte polynomial.
+\end{enumerate}
+\item\label{I:cuts} \emph{Cuts of a graph.}  Let $\Gamma$ be a connected graph,
+possibly with parallel edges, with one vertex $\infty$ marked.  For a set $I$
+of vertices, the \emph{cut} $\delta(I)$ is the set of edges with exactly one
+end in $I$.  A \emph{bond} is a minimal nonempty cut.
+\begin{enumerate}[label=(\alph*)]
+\item Give the edge between $D$ and $E$ the vector $x_D-x_E$, and the edge
+between $D$ and $\infty$ the vector $x_D$.  This is the usual representation of
+the graphic matroid, with $x_\infty=0$.  Its rank is the number of vertices
+other than $\infty$, its cocircuits are the bonds, and every bond is
+$\delta(I)$ for some $I$ not containing $\infty$.
+\begin{details}
+A set of edges spans the whole space exactly when it
+connects all the vertices.  So the complement of a set $C$ of edges spans a
+proper subspace exactly when deleting $C$ disconnects $\Gamma$, and the
+cocircuits are the minimal such $C$, which are the bonds.  For $I$ take the
+side of the disconnection without $\infty$.
+\end{details}
+\item Every cut is a disjoint union of bonds.
+\begin{details}
+If $S=\delta(I)$ is
+nonempty, it contains a bond $B$, a minimal nonempty cut inside $S$.  Cuts are
+closed under symmetric difference, since
+$\delta(I)\,\triangle\,\delta(I')=\delta(I\,\triangle\,I')$, so $S\setminus B$
+is a cut with fewer edges, and we induct.
+\end{details}
+\item The vectors of~(a) are unimodular \cite[Lemma~8.1]{hauselToricHyperKahler2002}.
+\item The number of acyclic orientations of $\Gamma$ with $\infty$ the only
+source is $T_\Gamma(1,0)$ \cite{greeneInterpretationWhitney1983}, where $T_\Gamma$ is the
+Tutte polynomial.
+\end{enumerate}
+\item\label{I:alg} \emph{Finite groups and graded algebras.}
+\begin{enumerate}[label=(\alph*)]
+\item Let a finite group $H$ act linearly on a complex vector space $U$.  The
+average $\Av_H=|H|^{-1}\sum_{h\in H}h$ is an $H$-equivariant projection of $U$
+onto $U^H$.  So for an $H$-stable subspace $U'\subseteq U$ we have
+$\Av_H(U')=U'^H$ and $(U/U')^H=U^H/U'^H$.
+\item The symmetric polynomials in $n$ variables are generated by the power
+sums of degrees $1,\dots,n$ (Newton's identities).
+\item Let $C=\bigoplus_{i\ge0}C_i$ be a finite-dimensional graded commutative
+algebra with $C_0=\C$, and $C_+=\bigoplus_{i>0}C_i$.  The \emph{socle} of $C$
+is the annihilator of $C_+$, and $C$ is \emph{level} if its socle is its top
+nonzero degree.  Every nonzero graded ideal $K$ of $C$ meets the socle.
+\begin{details}
+If $x\in K$ is homogeneous and nonzero of the largest degree
+occurring in $K$, then $C_+x\subseteq K$ lies in higher degrees, so
+$C_+x=0$.
+\end{details}
+\end{enumerate}
+\item\label{I:sylv} \emph{Sylvester's equation.}  Let $A\in\mathrm{End}(U)$
+and $B\in\mathrm{End}(U')$ have disjoint spectra.  Then $X\mapsto AX-XB$ is an
+invertible map of $\Hom(U',U)$, and the solution of $AX-XB=C$ is a linear
+combination of maps $A^rCB^s$.  Similarly, if $U=\bigoplus_DU_D$ and
+$A=\bigoplus_DA_D$ with pairwise disjoint spectra, then the projection of
+$U$ onto each $U_D$ is a polynomial in $A$.
+\begin{details}
+Let $\chi_B(t)=\sum_nc_nt^n$ be the characteristic polynomial of $B$.  The
+eigenvalues of $\chi_B(A)$ are the $\chi_B(\alpha)$ for the eigenvalues
+$\alpha$ of $A$, which are nonzero, so $\chi_B(A)$ is invertible, and by
+Cayley--Hamilton its inverse is a polynomial in $A$.  For
+$X\in\Hom(U',U)$ we have
+$A^nX-XB^n=\sum_{i+j=n-1}A^i(AX-XB)B^j$, and $\chi_B(B)=0$, so
+\[
+ X=\chi_B(A)^{-1}\sum_nc_n\sum_{i+j=n-1}A^i\,(AX-XB)\,B^j .
+\]
+For the projections, by the Chinese remainder
+theorem there is a polynomial $f_D$ that is $1$ modulo $\chi_{A_D}$ and $0$
+modulo $\chi_{A_E}$ for $E\neq D$, and $f_D(A)$ is that projection.
+\end{details}
+\item\label{I:core} \emph{Cores} \cite{hauselCohomologyLarge2013}.  Let $X$ be a quiver variety
+at a generic parameter $\nu$, as in \S\ref{ss:setup}.  The map
+$\pi\colon X\to\mu^{-1}(0)/\!/G$ to the affine quotient is projective.  The
+\emph{core} of $X$ is the projective variety $\fL=\pi^{-1}(\pi(0))$.  Let
+$\C^\times$ scale $T^*N$ with weight one.  This preserves $\mu^{-1}(0)$ and
+$\nu$-stability, so it acts on $X$, and for every $x\in X$ the limit
+$\lim_{t\to0}t\cdot x$ exists in $X$ and lies in $\fL$.
+\begin{details}
+$\C^\times$ acts on the coordinate ring
+$\C[\mu^{-1}(0)]^G$ of the affine quotient with positive weights apart from
+the constants.  So $\pi(t\cdot x)\to\pi(0)$ as $t\to0$, and $\pi$ is
+proper.
+\end{details}
+\begin{enumerate}[label=(\alph*)]
+\item $X$ retracts onto $\fL$, so restriction $H^*(X)\to H^*(\fL)$ is an
+isomorphism \cite{hauselCohomologyLarge2013}.
+\item Every $G$-invariant function on $\mu^{-1}(0)$ that vanishes at $0$
+vanishes on (the preimage of) $\fL$.  For example, for every loop $\ell$ of the
+quiver, the traces of the powers of $\ell$ vanish on $\fL$, so $\ell$ is
+nilpotent there.
+\item If $p\in\mu^{-1}(0)$ is stable and $\lambda(t)\cdot p\to0$ as $t\to0$ for
+a cocharacter $\lambda$ of $G$, then $[p]\in\fL$.
+\begin{details}
+Every $G$-invariant function $f$ satisfies $f(p)=f(\lambda(t)\cdot p)\to f(0)$, so
+$\pi([p])=\pi(0)$.
+\end{details}
+\item If $\dim\fL=e$, then $\dim H^{2e}(\fL)$ is the number of irreducible
+components of $\fL$ of dimension $e$ \cite[\S2.6]{CG97}.
+\begin{details}
+$\fL$ is compact, so
+$H^{2e}(\fL)$ is dual to $H_{2e}(\fL)$, which has a basis formed by the
+fundamental classes of these components \cite[\S2.6]{CG97}.
+\end{details}
+\end{enumerate}
+\item\label{I:sheaves} \emph{Weights and the decomposition theorem}, used
+only in \S\ref{sec:higgs}.  Complexes of sheaves on complex varieties are
+taken in the derived category of mixed Hodge modules
+\cite{saitoMixedHodge1990}, or, after spreading out, of mixed $\ell$-adic
+complexes \cite{BBD}.  Perverse sheaves are normalized so that a local
+system $\cL$ on a smooth variety $Y$ gives the perverse sheaf $\cL[\dim Y]$,
+and $\IC(\overline Y,\cL)$ is its intermediate extension to $\overline Y$.
+\begin{enumerate}[label=(\alph*)]
+\item A complex $K$ has weights $\le w$ if and only if each stalk
+$H^i(K_x)$ has weights $\le w+i$ (the definition \cite[\S5.1.8]{BBD}).  For
+$f$ a morphism, $Rf_*$ preserves weights $\ge w$ \cite[\S5.1.14]{BBD}.  On a
+smooth variety, $\Q$ is pure of weight $0$.  If $X$ is smooth and
+$H^*(X)\to H^*(\fL)$ is an isomorphism for some proper $\fL\subseteq X$, then
+$H^i(X)$ is pure of weight $i$: smoothness gives weights $\ge i$, and
+properness of $\fL$ gives weights $\le i$.
+\item A pure complex is, after extending scalars to an algebraic closure
+in the $\ell$-adic case, a direct sum of shifted simple perverse sheaves
+$\IC(\overline Y,\cL)$, with $Y$ smooth irreducible and $\cL$ an irreducible
+local system on $Y$ \cite[\S\S5.3.8, 5.4.5]{BBD}, \cite{saitoMixedHodge1990}.
+\item Let $y$ be a point of $\overline Y$ with $\dim Y>0$, such that
+$\IC(\overline Y,\cL)$ is constructible for a stratification having $\{y\}$
+as a stratum, and let $i_y$ be its inclusion.  Then
+$H^j(i_y^*\IC(\overline Y,\cL))=0$ for $j\ge0$ and
+$H^j(i_y^!\IC(\overline Y,\cL))=0$ for $j\le0$.  So the natural map
+$i_y^!\to i_y^*$ is zero on it.
+\item Let $\C^\times$ act on an affine space $V$ with positive weights, and
+let $K$ be constructible for a stratification by $\C^\times$-stable strata.
+Then restriction $R\Gamma(V,K)\to K_0$ is an isomorphism
+\cite[Prop.~3.7.5]{kashiwaraSheavesManifolds1994}.
+\begin{details}
+The homeomorphism
+$z\mapsto|z|^{1/a-1}z$ on each coordinate of weight $a$ turns the action of
+$\mathbb R_{>0}$ into scaling, and $K$ is then conic.
+\end{details}
+\item Let a finite group $W$ act linearly on $\A^l$, with quotient
+$q\colon\A^l\to\A^l/W$, and let $\cL(V)$ be the local system given by a
+$W$-module $V$ on the image of the free locus.  Then
+$\IC(\A^l/W,\cL(V))=(q_*\Q[l]\otimes V)^W$.  Its stalk at $q(0)$ is $V^W$ in degree $-l$, and the restriction
+from this stalk to the stalk at a free point is the inclusion $V^W\subseteq
+V$.
+\end{enumerate}
+\end{enumerate}
+
+\section{The comparison map}\label{sec:map}
+We regard $R_\hbar$ as the subalgebra of $A_{F,\hbar}$ of classes supported
+over the base point.  For generic $\nu$ the map $R_\hbar\to B^\nu(A_{F,\hbar})$
+is onto.  At $\hbar=0$ this is elementary, and we can say more:
+
+\begin{lemma}\label{lem:generic}
+Let $\nu$ be generic, let $A_{[k]}\subseteq A_F$ be the part of
+$\nu$-degree $k$, and let $I_B\subseteq A_F$ be the ideal generated by the
+elements of nonzero charge.  Put
+\[
+ J_\nu=\sum_{k>0}A_{[-k]}A_{[k]}.
+\]
+Then $A_{[0]}=R+J_\nu$ and $I_B\cap A_{[0]}=J_\nu$.  So $R\to
+B^\nu_F$ is onto, and $B^\nu_F=B_F$.
+\end{lemma}
+
+\begin{proof}
+The charge of a coweight $\lambda$ of $G$ is the vector of the sums of its
+entries at each vertex.  So a generator $M_{\lambda,p}$ of~\ref{I:gen} with
+$\lambda\neq0$ has a charge $c$ with $0<c\le\bv$ or $0<-c\le\bv$, and
+$\deg_\nu(c)\neq0$ as $\nu$ is generic.  The generators with $\lambda=0$ are
+the elements of $R$.  Now $A_{[0]}$ is spanned by the words in the generators
+whose $\nu$-degrees add up to zero.  If such a word has a letter of nonzero
+charge, then some letter has degree $-k<0$, and moving it to the front shows
+that the word lies in $A_{[-k]}A_{[k]}$, as $A_F$ is commutative.  Otherwise
+the word lies in $R$.  So $A_{[0]}=R+J_\nu$.  The same argument shows that
+every charge component $A^{(c)}$ with $c\neq0$ and $\deg_\nu(c)=0$ lies in
+$J_\nu$, since each word of charge $c$ has a letter of nonzero charge.
+
+Decomposing $I_B$ by charge, this gives $I_B\cap A_{[0]}=J_\nu$.  As
+$A_F=A^{(0)}+I_B$ and $A^{(0)}\subseteq A_{[0]}$, the map
+$B^\nu_F=A_{[0]}/J_\nu\to A_F/I_B=B_F$ is an isomorphism.
+\begin{details}
+Clearly $J_\nu\subseteq I_B$.  Conversely, $I_B$ is graded by charge.  Its
+components of nonzero charge $c$ with $\deg_\nu(c)=0$ lie in $A^{(c)}\subseteq
+J_\nu$.  Its charge-zero part is $\sum_{c\neq0}A^{(-c)}A^{(c)}$, and each
+$A^{(-c)}A^{(c)}$ lies in $J_\nu$: when $\deg_\nu(c)\neq0$ by the definition
+of $J_\nu$, and otherwise because $A^{(c)}\subseteq J_\nu$, which is an ideal of
+$A_{[0]}$.
+\end{details}
+\end{proof}
+
+For $\hbar\neq0$ the algebra $A_{F,\hbar}$ is not commutative, and we reorder:
+
+\begin{lemma}\label{lem:qsurj}
+Let $\nu$ be generic, and let $A_{[k]}\subseteq A_{F,\hbar}$ be the part of
+$\nu$-degree $k$.  Then
+\[
+ A_{[0]}=R_\hbar+J,\qquad J=\sum_{k>0}A_{[-k]}A_{[k]},
+\]
+so $R_\hbar\to B^\nu(A_{F,\hbar})$ is onto.
+\end{lemma}
+
+\begin{proof}
+Fix a dominant coweight $\Lambda$.  The filtered piece $A_{\le\Lambda}$
+of~\ref{I:gen} is a finitely generated graded $R_\hbar$-module, so the degrees
+of $A_{\le\Lambda}\cap A_{[0]}$ are bounded below, and we show that every
+homogeneous element of it lies in $R_\hbar+J$ by induction on degree.
+By~\ref{I:gen}, such an element is a combination of words
+$y=m_1\cdots m_r$ in the generators, of the same degree and of $\nu$-degree
+zero, whose coweights sum to at most $\Lambda$.  If no letter has nonzero
+charge, then $y\in R_\hbar$.  Otherwise, as in the proof of
+Lemma~\ref{lem:generic}, some letter $m_j$ has $\nu$-degree $-k<0$, and
+\[
+ y=m_j\cdot m_1\cdots\widehat{m_j}\cdots m_r
+ +\sum_{i<j}m_1\cdots m_{i-1}\,[m_i,m_j]\,m_{i+1}\cdots\widehat{m_j}\cdots m_r .
+\]
+The first term lies in $A_{[-k]}A_{[k]}$.  Since $A_F$ is commutative,
+$[m_i,m_j]=\hbar c$ for some $c$, and $c$ lies in the same filtered piece as
+$[m_i,m_j]$, because the subquotients of the filtration are free over
+$\C[\hbar]$ \cite[\S6(i)]{BFN}.  So each other term is $\hbar$ times an
+element of $A_{\le\Lambda}\cap A_{[0]}$ of lower degree, which lies in
+$R_\hbar+J$ by induction.
+\end{proof}
+
+% BEN (original note, kept as a comment): I hope to convince Spencer and Tommaso
+% to add this to their paper, otherwise, we can include the argument here.
+The comparison map is the following.
+
+\begin{theorem}[Botta--Tamagni, announced]\label{thm:map}
+For every generic $\nu$, the surjective maps $R_{\hbar}\to B^\nu(A_{F,\hbar})$
+and $R_{\hbar}\to H^*_{F\times\C^\times_\hbar}(X_\nu)$ induce a surjective
+homomorphism of graded $R_\hbar$-algebras
+\[
+ \Phi\colon B^\nu(A_{F,\hbar})\to H^*_{F\times\C^\times_\hbar}(X_\nu).
+\]
+\end{theorem}
+
+This is announced in \cite[Thm.~E, \S0.1.6.4]{bottaQuasimapCritical2026}, as a
+consequence of the Coulomb branch action on the critical cohomology of based
+quasimaps constructed there.  We use it without giving a proof.
+
+Setting $\hbar=0$, and also the flavor parameters to zero, gives
+surjections
+\[
+ \Phi\colon B^\nu_F\to H^*_F(X_\nu),\qquad\Phi\colon B^\nu_0\to H^*(X_\nu),
+\]
+with $\Phi[f]=\kappa(f)$ for $f\in R$.  Indeed, the B-algebras specialize
+by~\ref{I:base}, and so does the equivariant cohomology, as it is free over
+$H^*_{F\times\C^\times_\hbar}(\mathrm{pt})$ by~\ref{I:kirwan}.
+
+\section{Quivers with a loop at every vertex}\label{sec:loops}
+
+In this section $F$ is trivial, $\hbar=0$, every vertex $k$ with $v_k>0$
+carries a loop, and $\nu=\nu_{\det}$.  Write $A=A_0$, $B=B_0$ and
+$X=X_{\nu_{\det}}$, and let $I_B\subseteq A$ be the ideal generated by the
+elements of nonzero charge, so that $B=A/I_B$.
+
+As $\nu_{\det}$ is generic, Lemma~\ref{lem:generic} gives
+$B^{\nu_{\det}}_0=B$, and $R\to B$ is onto.  By \S\ref{sec:map} we have a
+surjection $\Phi\colon B\to H^*(X)$ with $\Phi[f]=\kappa(f)$ for $f\in R$.  We
+grade by half the cohomological degree.
+
+\begin{theorem}\label{thm:loops}
+For every quiver with a loop at every vertex of positive dimension,
+$\Phi\colon B\to H^*(X)$ is an isomorphism, and the Poincar\'e polynomial
+$P_X(q)=\sum_i\dim H^{2i}(X)\,q^i$ of $X$ is
+\[
+ P_X(q)=\sum_mq^{\delta_m}h_m(q),
+\]
+the sum over multipartitions $m$, with $\delta_m$ and $h_m$ as in
+\S\ref{ss:notation}.
+\end{theorem}
+
+\pre{Prop.~6.4} derives this formula for $P_X$ from Hausel's
+formula \cite{hauselBettiNumbers2006}.  Here it comes out of the proof;
+Remark~\ref{rem:hausel} explains how the two are related, and
+Example~\ref{ex:A2loops} works out a small case.  For the Jordan
+quiver with $\bw=1$, so that $X=\Hilb^n(\C^2)$, $Q'$ has no arrows, each
+$\Pol_m/J_m$ is $\C$, and $\delta_m=n-l(m)$; the formula is
+$P_X(q)=\sum_{m\vdash n}q^{n-l(m)}$.  For $\bw=r$, $X$ is the Gieseker variety
+$M(r,n)$; now $\Gamma_m$ has $r$ edges from each part to $\infty$ and none
+between parts, so $\Pol_m/J_m=\bigotimes_D\C[x_D]/(x_D^r)$ is the cohomology of
+$(\mathbb P^{r-1})^{l(m)}$, and $\delta_m=r(n-l(m))$.  If $m$ has $a_s$ parts of
+size $s$, then $\cW_m=\prod_s\mathfrak S_{a_s}$, the invariants are the
+cohomology of $\prod_s\Sym^{a_s}\mathbb P^{r-1}$, and
+\[
+ P_{M(r,n)}(q)=\sum_{m\vdash n}q^{r(n-l(m))}\prod_s\binom{a_s+r-1}{a_s}_{\!q},
+\]
+with $q$-binomial coefficients.  For $r=2$ and $n=2$ this is
+$(1+q+q^2)+q^2(1+q)=1+q+2q^2+q^3$.
+
+\emph{Plan.}  We follow the outline in the introduction.
+\begin{enumerate}[leftmargin=2em,label=(\alph*)]
+\item \emph{The filtration} (\S\ref{ss:filt}).  Proposition~\ref{prop:filt}
+filters $B$ by subspaces $F_L$, indexed by the number $L$ of parts of a
+multipartition, with surjections
+$\bigoplus_{l(m)=L}(\Pol_m/J_m)^{\cW_m}\langle\delta_m\rangle\twoheadrightarrow
+F_L/F_{L-1}$, where $\Pol_m/J_m$ is the cohomology of a hypertoric variety
+(Proposition~\ref{prop:toric}).  So $\dim B\le H(Q,\bv,\bw)$.
+\item \emph{The induced filtration} (\S\ref{ss:induced}).  The images
+$F'_L=\Phi(F_L)$ filter $H^*(X)$, and it suffices to show that the map from
+$\bigoplus_{l(m)=L}(\Pol_m/J_m)^{\cW_m}\langle\delta_m\rangle$ to
+$F'_L/F'_{L-1}$ is injective (Lemma~\ref{lem:reduction}).
+\item \emph{Levi subgroups} (\S\ref{ss:levi}).  Restriction to the Levi
+subgroup $M_m$, on the Coulomb side, and pullback along an \'etale map
+$X(M_m)^\circ\to X$, on the quiver variety side, turn the summand of $m$ into
+the piece $\Pol_m/J_m$ of the multipartition with one part per block for the
+quiver $Q_{M_m}$, with no invariants taken (Proposition~\ref{prop:detect}).
+So it suffices to treat that piece for every quiver with a loop at every
+vertex.
+\item \emph{The socle and the top degree} (\S\ref{ss:top}).  That piece is a
+level module over $R$, so it suffices to check injectivity on its socle, its
+top degree (Lemma~\ref{lem:socle}).  There we need enough classes in the top
+degree of $H^*(X)$, and we construct by hand enough components of the core of
+$X$ (Lemma~\ref{lem:comp}, Corollary~\ref{cor:topclass}).
+\end{enumerate}
+\S\ref{ss:proof} puts these together.
+
+\subsection{Notation}\label{ss:notation}
+Let $Q_0^+=\{k:v_k>0\}$ and $k_0=|Q_0^+|$.  Choose a loop $\ell_k$ at each
+$k\in Q_0^+$, and let $Q'$ be $Q$ with these loops removed.  Put
+$N'=N_{Q'}\oplus\Hom(W,V)$, so $N=\mathfrak g\oplus N'$.  Let $c_{kl}$ be the
+number of arrows of $Q'$ between $k$ and $l$, in either direction, so that a
+loop of $Q'$ at $k$ counts twice in $c_{kk}$.  Put
+$z=\frac12\sum_kc_{kk}v_k$, the number of zero weights of the diagonal
+torus on $N'$.  A point of $T^*N$ has two components in $\mathrm{End}(V_k)$
+for the chosen loop $\ell_k$: the map along the loop, which we also call
+$\ell_k$, and the map along the reversed loop, coming from the doubling of
+the quiver, which we call $\ell_k^*$.  So $\ell_k\in\mathfrak{gl}(V_k)$ is the
+coordinate on $N$, and $\ell_k^*$ is the dual coordinate on $N^*$.
+
+\emph{Multipartitions and Levi subgroups.}  A \emph{multipartition} $m$ is
+a tuple of partitions
+\[
+ m^{(k)}=(m^{(k)}_1\ge\cdots\ge m^{(k)}_{r_k})
+\]
+of $v_k$, $k\in Q_0^+$, where $r_k$ is the length of $m^{(k)}$.  Let
+$P_m=\{(k,i):k\in Q_0^+,\ 1\le i\le r_k\}$, the set indexing the parts of $m$.  For $D=(k,i)\in P_m$ put $k(D)=k$ and
+$s_D=m^{(k)}_i$, and put $l(m)=|P_m|$; we call the elements of $P_m$ the
+\emph{parts} of $m$.
+A decomposition
+\[
+ V_k=\bigoplus_{D\in P_m,\ k(D)=k}V^{(D)},\qquad \dim V^{(D)}=s_D,
+\]
+gives a Levi subgroup $M_m=\prod_{D\in P_m}\GL(V^{(D)})$.
+Every Levi subgroup of $G$ is conjugate to $M_m$ for exactly one $m$.  
+
+\emph{Toric data.}  Let
+$\Zm\cong(\C^\times)^{l(m)}$ be the center of $M_m$.  The group
+$\cW_m=N_G(M_m)/M_m$ permutes the parts of equal size at each vertex.  Let
+$\xi_m$ be a regular nilpotent element of $\mathrm{Lie}(M_m)$, so that as an
+element of $\mathfrak g$ it has Jordan type $m$.  The multipartition $m_G$,
+with one part at each vertex, has $M_{m_G}=G$.
+
+Let $N'^{\xi_m}\subseteq N'$ be the subspace killed by $\xi_m$.  The torus
+$\Zm$ commutes with $\xi_m$, so it acts on $N'^{\xi_m}$.  Write
+$x_D\in H^2_{\Zm}(\mathrm{pt})$ for the character by which $\Zm$ acts on
+$V^{(D)}$, so that $\Pol_m=H^*_{\Zm}(\mathrm{pt})=\C[x_D:D\in P_m]$.  The space
+$N'^{\xi_m}$ is the sum of the following pieces, on each of which $\Zm$ acts
+by a single weight.
+\begin{itemize}[leftmargin=2em]
+\item For each arrow from $k$ to $l$ of $Q'$, and parts $D$ at $k$ and $E$ at
+$l$, the space $\Hom(V^{(D)},V^{(E)})^{\xi_m}$ of maps commuting with
+$\xi_m$, of dimension $\min(s_D,s_E)$, with weight $x_E-x_D$.  The weight is
+zero exactly when $D=E$, for a loop of $Q'$.
+\begin{details}
+As a $\C[y]$-module, with $y$ acting by
+$\xi_m$, each $V^{(D)}$ is $\C[y]/y^{s_D}$, so
+\[
+ \dim \Hom(V^{(D)},V^{(E)})^{\xi_m}=\dim \Hom_{\C[y]}(\C[y]/y^{s_D},\C[y]/y^{s_E})=\min(s_D,s_E).
+\]
+\end{details}
+\item For each part $D$, the space $\Hom(W_{k(D)},V^{(D)}\cap\ker\xi_m)$, of
+dimension $w_{k(D)}$, with weight $x_D$.
+\begin{details}
+$\Hom(W,V)^{\xi_m}=\Hom(W,\ker\xi_m)$, and $\ker\xi_m$ has one dimension in
+each $V^{(D)}$.
+\end{details}
+\end{itemize}
+
+\begin{definition}\label{def:toric-data}
+Let $\Gamma_m$ be the graph whose vertices are the parts of $m$ and one more
+vertex $\infty$.  It has $c_{k(D)k(E)}\min(s_D,s_E)$ edges between parts
+$D\neq E$, and $w_{k(D)}$ edges between $D$ and $\infty$.  Label the edges
+between $D$ and $E$ by $x_D-x_E$, and those between $D$ and $\infty$ by $x_D$.
+Up to sign, these labels are the nonzero $\Zm$-weights of $N'^{\xi_m}$, one for
+each weight vector.  For a nonempty set $I$ of parts, let $q_I\in \Pol_m$ be the
+product of the labels of the edges with exactly one end in $I$, and let
+$J_m\subseteq \Pol_m$ be the ideal generated by the $q_I$.  Put
+\[
+ h_m=\Hilb\big((\Pol_m/J_m)^{\cW_m}\big),\qquad
+ \delta_m=\dim N'-\dim N'^{\xi_m},
+\]
+where $\Hilb$ is the Hilbert series in $q$, with each $x_D$ in degree $1$.
+\end{definition}
+For a graded space $U$, $U\langle\delta\rangle$ is $U$ with all degrees raised by
+$\delta$.
+
+\begin{proposition}\label{prop:toric}
+We have a ring isomorphism $\Pol_m/J_m\cong H^*(\fM_m)$, where $\fM_m$ is the hypertoric variety
+of $\Zm$ acting on $N'^{\xi_m}$ with its zero weights removed, at a generic
+parameter.  It vanishes above degree $n_m-l(m)$, where $n_m$ is the number
+of edges of $\Gamma_m$, and $\delta_m+n_m-l(m)=\dim N'-z-l(m)$.  If it is
+nonzero, it is level: its socle is its top degree $n_m-l(m)$.  That degree
+has dimension the number of acyclic orientations of $\Gamma_m$ in which
+$\infty$ is the only source.
+\end{proposition}
+
+\begin{proof}
+By~\ref{I:cuts}(a), with $x_\infty=0$, the weights of $\Zm$ on $N'^{\xi_m}$ are
+the vectors of the graphic matroid of $\Gamma_m$.  Suppose first that $\Gamma_m$
+is connected.  Then they span $H^2_{\Zm}(\mathrm{pt})$, and they are unimodular
+by~\ref{I:cuts}(c).  By~\ref{I:hypertoric}(b), $H^*(\fM_m)$ is $\Pol_m$ modulo the
+products of the weights over the cocircuits.  By~\ref{I:cuts}(a) the cocircuits
+are the bonds, and each bond is $\delta(I)$ for a nonempty set $I$ of parts.  So
+the ideal is contained in $J_m$.  Conversely, each $q_I$ is the product over the
+cut $\delta(I)$, which by~\ref{I:cuts}(b) is a disjoint union of bonds, so
+$q_I$ is a multiple of a bond product.  So the ideal is $J_m$.  (This is also
+\cite[Thm.~8.3]{hauselToricHyperKahler2002}, which presents the cohomology of a
+toric quiver variety by the products over all cuts.)  If $\Gamma_m$ is
+disconnected, then a component $I$ not containing $\infty$ has $q_I=1$, so
+$\Pol_m/J_m=0$.  The weights do not span, and a generic $\theta$ lies outside
+their span, so $\fM_m$ is empty and the isomorphism still holds.
+
+By~\ref{I:hypertoric}(a), $\fM_m$ is smooth, since the weights are
+unimodular, and it has dimension $2(n_m-l(m))$ when it is nonempty.
+By~\ref{I:hypertoric}(c), with $\dim\Zm=l(m)$ and $n_m$ nonzero weights, the
+ring vanishes above degree $n_m-l(m)$, and it is level.
+
+For the formula, the edges of $\Gamma_m$ correspond to the weight vectors of
+$N'^{\xi_m}$ with nonzero weight, and there are $z$ zero weights, so
+$n_m=\dim N'^{\xi_m}-z$ and $\delta_m+n_m=\dim N'-z$.
+\begin{details}
+By the description of $N'^{\xi_m}$
+before Definition~\ref{def:toric-data}, the zero weights are those of
+$\Hom(V^{(D)},V^{(D)})^{\xi_m}$ for the loops of $Q'$: each loop at $k$ and
+each part $D$ at $k$ give $s_D$ of them, so there are $\sum_k\frac12c_{kk}v_k=z$.
+\end{details}
+By~\ref{I:hypertoric}(d) the top Betti number
+is the top $h$-number of the cographic matroid of $\Gamma_m$, which is
+$T_{\Gamma_m}(1,0)$.
+By~\ref{I:cuts}(d) this counts the acyclic orientations of $\Gamma_m$ in which
+$\infty$ is the only source.
+\end{proof}
+
+\begin{remark}[the cuts as Euler classes]\label{rem:kirwan}
+The ideal $J_m$ has a direct geometric meaning, which we learned from
+\cite[\S\S1--2]{nakajimaMultipartitionSpaces2026}, notes on \pre{\S6} written by Claude at the request of
+H.~Nakajima.  Let
+$E_m$ be the space of representations, with dimension one at every vertex, of
+the quiver with vertices $P_m\sqcup\{\infty\}$, one arrow in each direction for
+each edge of $\Gamma_m$ between two parts, and one arrow $\infty\to D$ for each
+edge between $D$ and $\infty$.  The torus $\Zm$ acts on $E_m$, trivially at
+$\infty$, with weight $x_E-x_D$ on an arrow $D\to E$ and $x_D$ on an arrow
+$\infty\to D$.  Let $U_m\subseteq E_m$ be the open set where every part can be
+reached from $\infty$ along nonzero arrows.  As in~\ref{I:cyc}, it is the
+semistable locus for the determinant character, and $\Zm$ acts freely on it,
+so $U_m/\Zm$ is a smooth toric variety.
+\begin{enumerate}[leftmargin=2em]
+\item Restriction $\Pol_m=H^*_{\Zm}(E_m)\to H^*_{\Zm}(U_m)=H^*(U_m/\Zm)$ is
+onto, with kernel $J_m$.  This is Kirwan's method
+\cite{kirwanCohomologyQuotients1984} for the torus $\Zm$ and the determinant
+character, applied to the stratification of $E_m$ by the set $I$ of parts that
+cannot be reached; the class of the stratum of $I$ is $\pm q_I$.
+\begin{details}
+The stratum of $I$ is open in the linear subspace $L_I$
+where the arrows into $I$ from $\infty$ and from the parts outside $I$ vanish.
+There is one such arrow for each edge of the cut $\delta(I)$, so the
+equivariant class of $L_I$, which is the Euler class of the normal bundle of
+the stratum, is $\pm q_I$.  The stratum retracts onto $U_{m'}$, where $m'$ is
+the multipartition formed by the parts outside $I$, so its equivariant
+cohomology is $H^*_{Z_{m'}}(U_{m'})\otimes\C[x_D:D\in I]$.  On this ring $q_I$
+is not a zero divisor, since its part of top degree in the $x_D$, $D\in I$, is
+a single monomial.  So the Thom--Gysin sequences for removing the strata in
+order of increasing $|I|$ split; this is the criterion of Atiyah and Bott.  By
+induction on the number of parts, every class on a stratum is restricted from
+$\Pol_m$, so the image of its Gysin map is generated by $q_I$, and the kernel is
+$J_m$.  These are Kirwan's strata: the optimal destabilizing
+one-parameter subgroup of a point whose unreachable set is $I$ acts with
+weight $-1$ on the parts in $I$ and trivially on the others.
+\end{details}
+\item Adding arrows $D\to\infty$ dual to the framing arrows turns $E_m$ into
+the cotangent space of the representation space of an orientation of
+$\Gamma_m$.  The new arrows do not help to reach parts from $\infty$, so the
+quotient of its semistable locus by $\Zm$, which is the Lawrence toric variety
+of \cite{hauselToricHyperKahler2002}, is a vector bundle over $U_m/\Zm$.  For the
+determinant character it contains $\fM_m$ as the zero set of the moment map,
+and $\fM_m$ is a deformation retract of it \cite[Remark after the proof of
+Thm.~1.1]{hauselToricHyperKahler2002}.  So~(1) gives the ring isomorphism of
+Proposition~\ref{prop:toric} again, with all cuts at once.  In this
+description, $\fM_m$ is the quiver variety of an orientation of $\Gamma_m$,
+with dimension one at each part and the edges at $\infty$ as framing, at
+determinant stability.
+\item Compare Proposition~\ref{prop:filt}(3) below.  There, the cut relation
+for $I$ comes from splitting off the coweight supported on the first elements
+of the parts in $I$, whose nonzero charge kills it in $B$, and the coefficient
+of $r_{\lambda_m}$ in the resulting product is $\pm q_I$.  Here $q_I$ is the
+class of the stratum where exactly the parts in $I$ are unreachable.
+\item The group $\cW_m$ permutes the strata, and taking invariants in the split
+Thom--Gysin sequences gives
+\[
+ \frac1{(q)_m}=\sum_I q^{\deg q_I}\,\frac{h_{m'}(q)}{(q)_I},
+\]
+the sum over the $\cW_m$-orbits of subsets $I\subseteq P_m$, where $m'$ is the
+multipartition formed by the parts outside $I$.  Here $1/(q)_m=\prod_{k,s}\prod_{j=1}^{a_{k,s}}(1-q^j)^{-1}$ is the
+Hilbert series of $\Pol_m^{\cW_m}$, where $a_{k,s}$ is the number of parts of
+$m$ of size $s$ at $k$, and $(q)_I$ is defined in the same way from the parts
+in $I$.  The term of $I=\emptyset$ is $h_m$, so this determines $h_m$
+recursively.  It is \pre{Prop.~6.2}; see \cite[Prop.~2.1]{nakajimaMultipartitionSpaces2026}.
+\end{enumerate}
+Nothing in this remark is used in the proof of Theorem~\ref{thm:loops}.
+\end{remark}
+
+\begin{example}\label{ex:A2loops}
+Let $Q$ be the quiver $1\to2$ with a loop added at each vertex, so that $Q'$
+is $1\to2$, $c_{12}=1$ and $c_{11}=c_{22}=0$, and take $\bv=(2,1)$ and
+$\bw=(1,0)$.  Then $\dim N'=v_1v_2+w_1v_1=4$, $z=0$ and $k_0=2$.  There are
+two multipartitions.
+\begin{itemize}[leftmargin=2em]
+\item $m_G=((2),(1))$, with a part $D$ of size $2$ at $1$ and a part $E$ of
+size $1$ at $2$.  The graph $\Gamma_{m_G}$ is the path $\infty-D-E$, as
+$w_1=1$, $w_2=0$ and $\min(2,1)=1$.  Up to sign, $q_{\{D\}}=x_D(x_D-x_E)$,
+$q_{\{E\}}=x_E-x_D$ and $q_{\{D,E\}}=x_D$, so $J_{m_G}=(x_D,x_E)$ and
+$h_{m_G}=1$.  Also $\dim N'^{\xi_{m_G}}=\min(2,1)+w_1=2$, so $\delta_{m_G}=2$.
+\item $m=((1,1),(1))$, with parts $D_1,D_2$ at $1$ and $E$ at $2$, all of size
+one.  Then $\xi_m=0$, so $\delta_m=0$, and $\Gamma_m$ is the $4$-cycle
+$\infty-D_1-E-D_2-\infty$.  With $a=x_{D_1}$, $b=x_{D_2}$ and $c=x_E$, the
+$q_I$ are, up to sign, $a(a-c)$, $b(b-c)$, $(c-a)(c-b)$, $a(c-b)$, $b(c-a)$,
+$ab$ and $ab(a-c)(b-c)$.  The first six generate $(a,b,c)^2$, so
+$J_m=(a,b,c)^2$, and $\Pol_m/J_m$ has basis $1,a,b,c$.  Its top degree
+$n_m-l(m)=1$ has dimension $3$, the number of acyclic orientations of the
+$4$-cycle with $\infty$ the only source, and $\fM_m$ is the minimal resolution
+of $\C^2/(\Z/4)$.  The group $\cW_m=\mathfrak S_2$ swaps $a$ and $b$, so
+$h_m=1+2q$.
+\end{itemize}
+By Theorem~\ref{thm:loops}, the $8$-dimensional quiver variety $X$ has
+$P_X(q)=(1+2q)+q^2$, with top degree $d_{\max}=\dim N'-z-k_0=2$.  This example is taken from
+\cite[Exs.~1.13, 3.8]{nakajimaMultipartitionSpaces2026}.
+\end{example}
+
+\subsection{The Coulomb branch in abelianized form}\label{ss:abel}
+Let $T\subseteq G$ be the diagonal torus.  Index the standard bases of the
+$V_k$ by $\Omega=\{(k,a):k\in Q_0,\ 1\le a\le v_k\}$, and write $\Omega_k$ for
+the elements with first entry $k$, so $|\Omega_k|=v_k$.  So
+$T=(\C^\times)^\Omega$, coweights are elements of $\Z^\Omega$, and the
+charge of $\lambda$ is $(\sum_{d\in\Omega_k}\lambda_d)_k$.  Also
+$\Pol=H^*_T(\mathrm{pt})=\C[x_d:d\in\Omega]$, and $\cW=\prod_k\mathfrak S_{v_k}$.  Let
+$\cB'$ be the multiset of $T$-weights of $N'$.  In the commutative ring
+$\mathrm{Frac}(\Pol)[\Z^\Omega]$, with basis $e^\lambda$ over
+$\mathrm{Frac}(\Pol)$, put
+\[
+ r_\lambda=e^\lambda\prod_{\beta\in\cB'}\beta^{(-\langle\beta,\lambda\rangle)_+},
+\]
+where $y_+=\max(y,0)$ and $\langle\ ,\ \rangle$ pairs weights with coweights.
+The group $\cW$ acts on this ring by permuting the $x_d$ and the coordinates
+of $\lambda$ together.
+
+\begin{proposition}[Teleman]\label{prop:teleman}
+$A=\big(\bigoplus_{\lambda\in\Z^\Omega}\Pol\,r_\lambda\big)^{\cW}$, compatibly
+with the abelianization embedding of \cite[Lemma~5.17]{BFN}.
+\end{proposition}
+
+This is \cite[App.~A, Thm.~6]{telemanRoleCoulomb2021}: if the weights of $N$ contain
+the roots, the Coulomb branch is the $\cW$-invariant part of the abelian
+Coulomb branch of $T$ acting on $N$ with the roots removed.  The chosen
+loops supply the roots: the weights of $\ell_k$ are the $x_e-x_d$ for
+$d,e\in\Omega_k$, so removing the roots leaves the weights of $N'$ and some
+zero weights, which do not contribute to $r_\lambda$.
+
+For $\lambda\in\Z^\Omega$, let $\cW_\lambda$ be its stabilizer in $\cW$.
+Since $\cB'$ is $\cW$-stable, $w(r_\lambda)=r_{w\lambda}$ for $w\in\cW$.  For
+$p\in \Pol^{\cW_\lambda}$, the \emph{dressed
+monopole} $\mathsf S_\lambda(p)=\sum_{w\in\cW/\cW_\lambda}w(p\,r_\lambda)$ lies
+in $A$ and has the charge of $\lambda$.  Products are computed with
+\begin{equation}\label{eq:rr}
+ r_\lambda r_\mu=\Big(\prod_{\beta\in\cB'}\beta^{(-\langle\beta,\lambda\rangle)_+
+ +(-\langle\beta,\mu\rangle)_+-(-\langle\beta,\lambda+\mu\rangle)_+}\Big)\,r_{\lambda+\mu},
+\end{equation}
+whose prefactor is a polynomial.  Every element of $A$ is a sum of dressed
+monopoles, one for each $\cW$-orbit of coweights.
+\begin{details}
+Each $\cW$-invariant element
+$\sum_\lambda f_\lambda r_\lambda$, with $f_\lambda\in\Pol$, has
+$f_{w\lambda}=w(f_\lambda)$, so $f_\lambda\in\Pol^{\cW_\lambda}$, and its terms
+on the $\cW$-orbit of $\lambda$ add up to $\mathsf S_\lambda(f_\lambda)$.
+\end{details}
+
+\emph{Degrees.}  We grade by half the cohomological degree, so each $x_d$
+has degree $1$.  In the grading of \cite{BFN}, halved, the class
+$r_\lambda$ has degree $\frac12\sum_{\beta\in\cB'}|\langle\beta,\lambda\rangle|$.
+If $\lambda$ has charge zero, this is
+\[
+ \deg r_\lambda=\sum_{\beta\in\cB'}(-\langle\beta,\lambda\rangle)_+,
+\]
+the degree of the prefactor of $r_\lambda$.
+\begin{details}
+The character $\sum_{\beta\in\cB'}\beta$ is $\cW$-invariant, hence a
+combination of the characters $\sum_{d\in\Omega_k}x_d$.  So if $\lambda$ has
+charge zero, then $\sum_{\beta\in\cB'}\langle\beta,\lambda\rangle=0$, and
+$\frac12|y|=(-y)_++\frac12y$.
+\end{details}
+
+\subsection{The multipartition filtration}\label{ss:filt}
+Fix a multipartition $m$.  Split each $\Omega_k$ into blocks, one for each
+part $D$ at $k$, of size $s_D$, and choose a \emph{first element} $d_D$ in
+each block.  Let $s\in\Z^\Omega_{\ge0}$ be $s_D$ at $d_D$ and $0$ elsewhere,
+and put $\lambda_m=s-\one$, where $\one\in\Z^\Omega$ has all entries $1$.  So
+$\lambda_m$ is $s_D-1$ at the first element of
+the block $D$ and $-1$ at its other elements.  Listing the elements of a
+block with its first element first, the entries of $\lambda_m$ on $D$ are
+\[
+ \lambda_m|_D=(\,\underbrace{s_D-1,\,-1,\,-1,\,\dots,\,-1}_{s_D\text{ entries}}\,),
+\]
+and $\lambda_m$ is the concatenation of these vectors over all blocks $D$.  For
+example, for $m=(3,1)$ at a vertex with $v_k=4$ it is $(2,-1,-1,\,0)$.  It has
+charge zero, and its
+$\cW$-orbit does not depend on the choices.  The blocks also realize $M_m$,
+with $T\subseteq M_m$.  Let $\epsilon\colon \Pol\to \Pol_m$ be restriction to
+$\Zm\subseteq T$, which sets $x_d=x_D$ for $d$ in the block $D$.  For
+$m=m_G$ we write $\lambda_G$, $\Pol_G$ and $J_G$.
+
+Let $F_L\subseteq B$ be the span of the classes $[\mathsf S_{\lambda_m}(p)]$
+with $l(m)\le L$ and $p\in \Pol^{\cW_{\lambda_m}}$.  It does not depend on the
+choice of blocks and first elements: another choice replaces $\lambda_m$ by
+some $w\lambda_m$, and $\mathsf S_{w\lambda}(wp)=\mathsf S_\lambda(p)$.
+
+\begin{proposition}\label{prop:filt}
+\begin{enumerate}[leftmargin=2em]
+\item $F_{|\bv|}=B$ and $F_{k_0-1}=0$.
+\item For $p\in\Pol^{\cW_{\lambda_m}}$, the class $[\mathsf S_{\lambda_m}(p)]\in B$
+depends only on $\epsilon(p)$, and it has degree $\deg p+\delta_m$.
+\item If $\epsilon(p)\in J_m$, then $[\mathsf S_{\lambda_m}(p)]\in
+F_{l(m)-1}$.
+\end{enumerate}
+So $\epsilon(p)\mapsto[\mathsf S_{\lambda_m}(p)]$ induces a surjection
+$\bigoplus_{l(m)=L}(\Pol_m/J_m)^{\cW_m}\langle\delta_m\rangle\twoheadrightarrow
+F_L/F_{L-1}$.
+\end{proposition}
+
+\begin{proof}
+(1) If every part of $m$ has size $1$, then every element of $\Omega$ is a
+first element and $s=\one$, so $\lambda_m=0$, $\cW_{\lambda_m}=\cW$ and
+$\mathsf S_0(p)=p$ for $p\in \Pol^\cW=R$.  So $F_{|\bv|}$ contains the image
+of $R$, which is $B$, as shown at the start of this section.  Every
+multipartition has at least one part at each vertex of $Q_0^+$, so
+$l(m)\ge k_0$ and $F_{k_0-1}=0$.
+
+(2) \emph{The stabilizer.}  Write $H=\cW_{\lambda_m}$.  It preserves the set
+of first elements of each $\Omega_k$, on which it acts by the group $H_1$ of
+permutations of the first elements of parts of equal size at the same vertex;
+under $d_D\mapsto D$, $H_1$ is $\cW_m$.  On the non-first elements of each
+$\Omega_k$ it acts by the full symmetric group, and $H$ is the product of $H_1$
+and these symmetric groups.
+\begin{details}
+The entry of
+$\lambda_m$ is $s_D-1\ge0$ at a first element $d_D$ and $-1$ at a non-first
+element, and $H$ permutes exactly the elements of each $\Omega_k$ with equal
+entries.
+\end{details}
+
+\emph{Generators of $\Pol^H$.}  Let $\Pol^{\rm f}=\C[x_{d_D}:D\in P_m]$ be the
+polynomials in the first elements, and for $k\in Q_0^+$ and $j\ge1$ let
+\[
+ P_{k,j}=\sum_{d\in\Omega_k}x_d^j\in R,\qquad
+ P^m_{k,j}=\sum_{D:\,k(D)=k}s_D\,x_{d_D}^j\in(\Pol^{\rm f})^{H_1}.
+\]
+By~\ref{I:alg}(b), $\Pol^H$ is generated over $(\Pol^{\rm f})^{H_1}$ by the
+$P_{k,j}$.
+\begin{details}
+By~\ref{I:alg}(b), $\Pol^H$ is generated over $(\Pol^{\rm f})^{H_1}$ by the
+power sums of the non-first variables of each $\Omega_k$, and the power sum of
+the first variables of $\Omega_k$ lies in $(\Pol^{\rm f})^{H_1}$.
+\end{details}
+
+\emph{A relation from derivations.}  It suffices to show that multiplying
+the dressing by $P_{k,j}$ or by $P^m_{k,j}$ gives the same class in $B$.  This
+comes from a derivation of $A$ that acts by zero on $B$.  For each $k$ and
+$j\ge1$, let
+$\eta_{k,j}$ be the map
+\[
+ \eta_{k,j}\colon p\,e^\lambda\mapsto p\,e^\lambda\sum_{d\in\Omega_k}\lambda_dx_d^j
+\]
+on $\mathrm{Frac}(\Pol)[\Z^\Omega]$.  It is a derivation, since the multiplier
+is additive in $\lambda$.  It commutes with $\cW$, since $\cW$ permutes each
+$\Omega_k$, and it multiplies each $r_\lambda$ by a polynomial.  So it
+preserves $A$ and its charge components, and as it is a derivation it
+preserves the ideal $I_B$.  So it induces a map on $B=A/I_B$, and this map is
+zero.  Indeed, $R\to B$ is onto, so every $a\in A$ is $r+i$ with $r\in R$ and
+$i\in I_B$.  Now $\eta_{k,j}(r)=0$, since $r$ has $\lambda=0$, and
+$\eta_{k,j}(i)\in I_B$.  So $[\eta_{k,j}(a)]=0$ in $B$ for every $a\in A$.
+
+Take $a=\mathsf S_{\lambda_m}(p)=\sum_{w\in\cW/H}w(p\,r_{\lambda_m})$ with
+$p\in\Pol^H$.  The multiplier of $\eta_{k,j}$ at $w\lambda_m$ is
+$w(\sigma_{k,j})$, where $\sigma_{k,j}$ is its value at $\lambda_m$:
+\[
+ \sigma_{k,j}=\sum_{d\in\Omega_k}(\lambda_m)_dx_d^j
+ =-P_{k,j}+P^m_{k,j}.
+\]
+It is $H$-invariant, so $\eta_{k,j}(a)=\mathsf S_{\lambda_m}(\sigma_{k,j}\,p)$.
+Since $[\eta_{k,j}(a)]=0$, for all $p\in\Pol^H$ we have
+\begin{equation}\label{eq:powersum}
+ [\mathsf S_{\lambda_m}(P_{k,j}\,p)]=[\mathsf S_{\lambda_m}(P^m_{k,j}\,p)].
+\end{equation}
+
+\emph{Dependence on $\epsilon(p)$.}  Let $\epsilon^{\rm f}\colon\Pol^{\rm f}\to\Pol_m$ be the restriction of
+$\epsilon$, the isomorphism with $x_{d_D}\mapsto x_D$.  The polynomials
+$P_{k,j}$ and $P^m_{k,j}$ have the same image $\sum_Ds_Dx_D^j$ under
+$\epsilon$, so applying~\eqref{eq:powersum} repeatedly shows that $[\mathsf
+S_{\lambda_m}(p)]$ depends only on $\epsilon(p)$.  Also
+$\epsilon(\Pol^H)=\Pol_m^{\cW_m}$.
+\begin{details}
+Put
+$\varphi=(\epsilon^{\rm f})^{-1}\circ\epsilon$ on $\Pol^H$.  It is the algebra
+homomorphism $\Pol^H\to(\Pol^{\rm f})^{H_1}$ that fixes $(\Pol^{\rm f})^{H_1}$
+and sends $P_{k,j}$ to $P^m_{k,j}$, since both have image
+$\sum_Ds_Dx_D^j$ under $\epsilon$.  Let $p=c\,P_{k_1,j_1}\cdots
+P_{k_r,j_r}$ with $c\in(\Pol^{\rm f})^{H_1}$.  Applying~\eqref{eq:powersum}
+$r$ times gives
+\[
+ [\mathsf S_{\lambda_m}(p)]=[\mathsf S_{\lambda_m}(c\,P^m_{k_1,j_1}\cdots
+ P^m_{k_r,j_r})]=[\mathsf S_{\lambda_m}(\varphi(p))].
+\]
+Such $p$ span $\Pol^H$, so $[\mathsf S_{\lambda_m}(p)]=[\mathsf
+S_{\lambda_m}(\varphi(p))]$ for all $p\in\Pol^H$, and this depends only on
+$\epsilon(p)$.  Also $\varphi(\Pol^H)=(\Pol^{\rm f})^{H_1}$, so
+$\epsilon(\Pol^H)=\Pol_m^{\cW_m}$.
+\end{details}
+
+\emph{Degree.}  The element $\mathsf S_{\lambda_m}(p)$ is a sum of $\cW$-translates of
+$p\,r_{\lambda_m}$, and $\lambda_m$ has charge zero, so by \S\ref{ss:abel}
+its degree is $\deg p+\sum_{\beta\in\cB'}(-\langle\beta,\lambda_m\rangle)_+$.
+Counting the weights of $N'$ arrow by arrow shows that this sum is
+$\dim N'-\dim N'^{\xi_m}=\delta_m$.
+\begin{details}
+Write $s_d$ for the entry of $s$ at $d\in\Omega$, so $s_{d_D}=s_D$ and $s_d=0$
+at non-first elements.  Then $\langle\beta,\lambda_m\rangle
+=\langle\beta,s\rangle-\langle\beta,\one\rangle$.
+\begin{itemize}[leftmargin=2em]
+\item An arrow from $k$ to $l$ of $Q'$ contributes the weights $x_e-x_d$, for
+$d\in\Omega_k$ and $e\in\Omega_l$, with
+$(-\langle\beta,\lambda_m\rangle)_+=(s_d-s_e)_+$.  This is $0$ if $d$ is not
+a first element.  It is $s_D$ if $d=d_D$ and $e$ is not a first element, and
+$\Omega_l$ has $v_l-r_l$ non-first elements.  It is
+$(s_D-s_E)_+=s_D-\min(s_D,s_E)$ if $d=d_D$ and $e=d_E$.  Since
+$\sum_{k(D)=k}s_D=v_k$, the total is
+\[
+ v_k(v_l-r_l)+r_lv_k-\sum_{k(D)=k,\,k(E)=l}\min(s_D,s_E)
+ =v_kv_l-\sum_{k(D)=k,\,k(E)=l}\min(s_D,s_E).
+\]
+\item The framing at $k$ contributes the weights $x_d$, $d\in\Omega_k$, each
+$w_k$ times, with $(-\langle\beta,\lambda_m\rangle)_+=(1-s_d)_+$.  This is $1$
+at the $v_k-r_k$ non-first elements and $0$ at the first elements, so the
+total is $w_k(v_k-r_k)$.
+\end{itemize}
+By the computation before Definition~\ref{def:toric-data},
+\[
+ \dim\Hom(V_k,V_l)^{\xi_m}=\sum_{k(D)=k,\,k(E)=l}\min(s_D,s_E),\qquad
+ \dim\Hom(W_k,V_k)^{\xi_m}=w_kr_k .
+\]
+So the sum is $\dim N'-\dim N'^{\xi_m}=\delta_m$.
+\end{details}
+
+(3) For each nonempty set $I$ of parts, we split $\lambda_m$ into two
+coweights, one of nonzero charge, and expand their product, which vanishes in
+$B$.  Its leading term involves $q_I$, and the other terms lie in
+$F_{l(m)-1}$.
+
+\emph{The cut relation.}  Fix a nonempty set $I\subseteq P_m$ of parts.  Let $b\in\Z^\Omega_{\ge0}$
+agree with $s$ at the first elements of the parts in $I$ and vanish
+elsewhere, and put $a=s-b$.  So $a$ records the parts outside $I$, $b$ records
+the parts in $I$, and $\lambda_m=(a-\one)+b$.  The charge of $b$ is nonzero,
+since its entries are $\ge0$ and $s_D>0$ for $D\in I$.  So for
+$p_a\in\Pol^{\cW_a}$ and $p_b\in\Pol^{\cW_b}$, the element
+$\mathsf S_b(p_b)$ lies in $I_B$, and in $B$ we have
+\begin{equation}\label{eq:cutrel}
+ [\mathsf S_{a-\one}(p_a)\,\mathsf S_b(p_b)]=0.
+\end{equation}
+(Note $\cW_{a-\one}=\cW_a$.)  We expand this product.  Since
+$w(r_\lambda)=r_{w\lambda}$,
+\[
+ \mathsf S_{a-\one}(p_a)\,\mathsf S_b(p_b)
+ =\sum_{w\in\cW/\cW_a}\ \sum_{w'\in\cW/\cW_b}w(p_a)\,w'(p_b)\,
+ r_{wa-\one}\,r_{w'b},
+\]
+and by~\eqref{eq:rr}, the term of $(w,w')$ is a polynomial times $r_{t-\one}$,
+where $t=wa+w'b$.  By \S\ref{ss:abel}, grouping the terms by the
+$\cW$-orbit of $t-\one$ writes the product as a sum of dressed monopoles, one
+for each orbit.
+
+\emph{Which orbits occur.}  Since $t\ge0$ and $\sum_{d\in\Omega_k}t_d=v_k$, the
+nonzero entries of $t$ on each $\Omega_k$, in decreasing order, form a
+partition of $v_k$.  Let $m'$ be the multipartition they define; then $t-\one$
+is conjugate to $\lambda_{m'}$.  The supports of $a$ and $b$ are disjoint, with
+$l(m)$ elements in all, so $l(m')$ is $l(m)$ minus the number of common
+elements of the supports of $wa$ and $w'b$.  The orbits coming from terms
+with overlapping supports therefore give dressed monopoles in
+$F_{l(m)-1}$.  If the supports are disjoint, then the nonzero entries of $t$
+at $k$ are those of $a$ and $b$ together, which are the parts of $m$ at $k$.
+So $m'=m$, and all these terms lie on the orbit of $\lambda_m$.  That orbit
+contributes $\mathsf S_{\lambda_m}(f)$, where $f$ is the coefficient of
+$r_{\lambda_m}$, which comes from the pairs $(wa,w'b)$ with $wa+w'b=s$.
+
+\emph{The coefficient of $r_{\lambda_m}$.}  These pairs are the $(ha,hb)$
+for $h\in H$, and they are indexed by $H/H_I$, where $H_I=\cW_a\cap\cW_b$.
+Write $r_{a-\one}r_b=g\,r_{\lambda_m}$, with $g$ the prefactor
+of~\eqref{eq:rr}.  Since $p_a$ is $\cW_a$-invariant and $p_b$ is
+$\cW_b$-invariant, the pair $(ha,hb)$ contributes $h(p_ap_b\,g)\,r_{\lambda_m}$,
+so $f=\sum_{h\in H/H_I}h(p_ap_b\,g)$.  Comparing the exponents in $g$ with
+Definition~\ref{def:toric-data}, $g=\pm\tilde q_I$, where $\tilde
+q_I=(\epsilon^{\rm f})^{-1}(q_I)$ is $q_I$ written in the first elements.
+\begin{details}
+Given a pair $(wa,w'b)$ with $wa+w'b=s$,
+$w'b$ agrees with $s$ on its support, and the first elements in that support
+at each vertex carry the sizes of the parts of $I$ there.  So some $h\in H_1$
+maps the first elements of the parts in $I$ onto them, preserving sizes, and
+then $hb=w'b$ and $ha=h(s-b)=s-w'b=wa$.  The stabilizer of $(a,b)$ in $H$ is
+$H_I$.
+
+For a weight $x_e-x_d$ of an arrow from $k$ to $l$ of $Q'$,
+its exponent in $g$ is
+$(a_d-a_e)_++(b_d-b_e)_+-(s_d-s_e)_+$.  This is $0$ unless $d$ and $e$ are
+both first elements, $d=d_D$ and $e=d_E$.  It is also $0$ if $D$ and $E$ are
+both in $I$ or both outside $I$, and it is $\min(s_D,s_E)$ if exactly one of
+them is in $I$.  For a framing weight $x_d$, the exponent is
+$(1-a_d)_+-(1-s_d)_+$, which is $1$ if $d$ is the first element of a part in
+$I$ and $0$ otherwise.
+\end{details}
+By~\eqref{eq:cutrel}, we have shown
+\begin{equation}\label{eq:cutclass}
+ \Big[\mathsf S_{\lambda_m}\Big(\textstyle\sum_{h\in H/H_I}h(\tilde
+ q_I\,p_ap_b)\Big)\Big]\in F_{l(m)-1}.
+\end{equation}
+
+\emph{Choice of dressings.}  Averaging~\eqref{eq:cutclass} over suitable
+dressings $p_a$ and $p_b$ gives $[\mathsf S_{\lambda_m}(\Av_H(\tilde
+q_Iy))]\in F_{l(m)-1}$ for every $y\in\Pol^{\rm f}$, and the images
+$\epsilon(\Av_H(\tilde q_Iy))=\Av_{\cW_m}(q_I\,\epsilon(y))$ span
+$\Av_{\cW_m}(J_m)=J_m^{\cW_m}$.
+\begin{details}
+The group $\cW_a$ permutes the first elements
+of the parts outside $I$ of equal size at the same vertex, and it permutes
+all the other elements of each $\Omega_k$ arbitrarily, since $a$ vanishes
+there.  So every polynomial $p_a$ in the variables $x_{d_D}$, $D\notin I$,
+invariant under permuting the parts outside $I$ of equal size at the same
+vertex, lies in $\Pol^{\cW_a}$.  Likewise for $p_b$, with $D\in I$.  On
+$\Pol^{\rm f}$, the group $H_I$ acts by the permutations of the first elements
+that preserve vertex and size and preserve $I$, and the products $p_ap_b$ of
+such $p_a$ and $p_b$ span $(\Pol^{\rm f})^{H_I}$.  The polynomial $\tilde
+q_I$ is $H_I$-invariant.  Let $y\in\Pol^{\rm f}$.  Then
+\[
+ \Av_H(\tilde q_Iy)=\frac{|H_I|}{|H|}\sum_{h\in H/H_I}h\big(\tilde
+ q_I\,\Av_{H_I}(y)\big),
+\]
+and $\Av_{H_I}(y)$ is a combination of products $p_ap_b$.
+So~\eqref{eq:cutclass} gives $[\mathsf S_{\lambda_m}(\Av_H(\tilde
+q_Iy))]\in F_{l(m)-1}$.  The group $H$ acts on $\Pol^{\rm f}$ through $H_1$,
+and $\epsilon^{\rm f}$ identifies $H_1$ with $\cW_m$, so
+$\epsilon(\Av_H(\tilde q_Iy))=\Av_{\cW_m}(q_I\,\epsilon(y))$.  As $y$ varies,
+$\epsilon(y)$ runs over $\Pol_m$.  The group $\cW_m$ permutes the edges of
+$\Gamma_m$, so $J_m$ is $\cW_m$-stable, and by~\ref{I:alg}(a) these elements
+span $\Av_{\cW_m}(J_m)=J_m^{\cW_m}$.
+\end{details}
+
+Now let $p\in\Pol^H$ with $\epsilon(p)\in J_m$.  By~(2), $\epsilon(p)\in
+\Pol_m^{\cW_m}$, so $\epsilon(p)\in J_m^{\cW_m}$, and $\epsilon(p)=\epsilon(p')$
+for a combination $p'$ of the $\Av_H(\tilde q_Iy)$.  By~(2), $[\mathsf
+S_{\lambda_m}(p)]=[\mathsf S_{\lambda_m}(p')]\in F_{l(m)-1}$.
+
+Finally, by~(2), $\epsilon(\Pol^H)=\Pol_m^{\cW_m}$, and
+$(\Pol_m/J_m)^{\cW_m}=\Pol_m^{\cW_m}/J_m^{\cW_m}$ by~\ref{I:alg}(a).
+So~(2) and~(3) give a well-defined map
+$(\Pol_m/J_m)^{\cW_m}\langle\delta_m\rangle\to F_L/F_{L-1}$ for each $m$ with $l(m)=L$,
+of degree zero.  The sum of these maps is onto, since $F_L$ is spanned by
+$F_{L-1}$ and the $[\mathsf S_{\lambda_m}(p)]$ with $l(m)=L$.
+\end{proof}
+
+This is the argument of \pre{Prop.~5.2}.
+
+\subsection{The induced filtration}\label{ss:induced}
+Put $F'_L=\Phi(F_L)\subseteq H^*(X)$.  As $\Phi$ is onto, these subspaces
+filter $H^*(X)$, with $F'_{k_0-1}=0$ and $F'_{|\bv|}=H^*(X)$, and $\Phi$
+induces surjections $F_L/F_{L-1}\to F'_L/F'_{L-1}$.
+
+\begin{lemma}\label{lem:reduction}
+Suppose that for every $L$ the composite
+\begin{equation}\label{eq:grcomposite}
+ \bigoplus_{l(m)=L}(\Pol_m/J_m)^{\cW_m}\langle\delta_m\rangle
+ \twoheadrightarrow F_L/F_{L-1}\twoheadrightarrow F'_L/F'_{L-1}
+\end{equation}
+of the surjection of Proposition~\ref{prop:filt} with the map induced by
+$\Phi$ is injective.  Then Theorem~\ref{thm:loops} holds.
+\end{lemma}
+
+\begin{proof}
+Both maps in~\eqref{eq:grcomposite} are then isomorphisms, so
+$\dim B=\sum_L\dim F_L/F_{L-1}=\sum_L\dim F'_L/F'_{L-1}=\dim H^*(X)$, and the
+surjection $\Phi$ is an isomorphism.  As $\Phi$ preserves degrees, the
+Poincar\'e polynomial of $X$ is $\sum_mq^{\delta_m}h_m(q)$.
+\end{proof}
+
+The first case is $L=k_0$.  The only multipartition with $k_0$ parts is
+$m_G$, with one part at each vertex, for which $\cW_{m_G}$ is trivial and
+$\epsilon$ maps $\Pol^{\cW_{\lambda_G}}$ onto $\Pol_G$.  As $F_{k_0-1}=0$,
+Proposition~\ref{prop:filt}(2) and~(3) give a well-defined map
+\[
+ \psi\colon(\Pol_G/J_G)\langle\delta_{m_G}\rangle\to H^*(X),\qquad
+ \psi(\epsilon(p))=\Phi[\mathsf S_{\lambda_G}(p)]\quad\text{for }p\in\Pol^{\cW_{\lambda_G}},
+\]
+and this is the composite~\eqref{eq:grcomposite} for $L=k_0$.  The other
+values of $L$ reduce to this case for other quivers, by restriction to Levi
+subgroups (Proposition~\ref{prop:detect}), and in \S\ref{ss:top} we show that
+$\psi$ is injective (Corollary~\ref{cor:topclass}).
+
+\subsection{Levi subgroups}\label{ss:levi}
+A Levi subgroup $M\supseteq T$ is given by a decomposition of each
+$\Omega_k$ into blocks.  The gauge theory of $M$ acting on $\mathfrak
+m\oplus N'$ is the quiver gauge theory of the following quiver $Q_M$:
+\begin{itemize}[leftmargin=2em]
+\item its vertices are the blocks, with dimension the size of the block;
+\item the block $(k,D)$ has framing $W_k$ and one loop, the $(D,D)$ block of
+$\ell_k$;
+\item for each arrow $k\to l$ of $Q'$ and all blocks $(k,D)$ and $(l,E)$,
+there is an arrow $(k,D)\to(l,E)$.
+\end{itemize}
+Keeping only the block-diagonal part $\mathfrak m$ of the chosen loops, rather
+than all of $\mathfrak g$, gives $Q_M$ a loop at every vertex, so $Q_M$
+satisfies the hypotheses of this section; the off-diagonal part is recovered
+in Lemma~\ref{lem:ind}.  We write $A(M)$,
+$B(M)$, $X(M)$, $\Phi_M$ and $\kappa_M$ for its Coulomb branch, B-algebra,
+quiver variety at determinant stability, comparison map and Kirwan map.
+Its Weyl group $\cW_M\subseteq\cW$ is the product of the symmetric groups
+of the blocks.  We write $\mathsf S^M_\lambda(p)$ for its dressed monopoles,
+which are sums over $\cW_M/\cW_{M,\lambda}$, where
+$\cW_{M,\lambda}=\cW_M\cap\cW_\lambda$.  For $M=M_m$, built from the blocks used to
+define $\lambda_m$, the multipartition of $Q_M$ with one part per block has
+coweight $\lambda_m$, graph $\Gamma_m$, and data $\Pol_m$ and $J_m$.
+
+\begin{lemma}[restriction]\label{lem:restr}
+\begin{enumerate}[leftmargin=2em]
+\item Proposition~\ref{prop:teleman} for $G$ and for $M$ gives $A\subseteq
+A(M)$, with the same $r_\lambda$.  Followed by projection to the part of
+$M$-charge zero, this induces a ring homomorphism
+$\res_M\colon B\to B(M)$ with $\res_M[f]=[f]$ for $f\in R$.
+\item If $l(m)$ is less than the number of blocks of $M$, then
+$\res_M[\mathsf S_{\lambda_m}(p)]=0$.
+\item $\res_{M_m}[\mathsf S_{\lambda_m}(p)]=[\mathsf
+S^{M_m}_{\lambda_m}(p)]$, and this depends only on $\epsilon(p)$.  If
+$m'\neq m$ and $l(m')=l(m)$, then $\res_{M_m}[\mathsf S_{\lambda_{m'}}(p)]=0$.
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+(1) The quiver $Q_M$ has one chosen loop at each block, and removing these
+loops leaves the $M$-module $N'$: the arrows of $Q_M$ between blocks are the
+block components of the arrows of $Q'$, and its framings are the block
+components of $\Hom(W,V)$.  So Proposition~\ref{prop:teleman} for $Q_M$ uses
+the same torus $T$, the same weights $\cB'$ and the same $r_\lambda$, and it
+gives $A(M)=\big(\bigoplus_\lambda\Pol\,r_\lambda\big)^{\cW_M}$.  Hence
+$A\subseteq A(M)$.
+
+The $M$-charge of $r_\lambda$ is the vector of the sums of $\lambda$ over the
+blocks.  For $a\in A$, let $a_0$ be its component of $M$-charge zero.  Then
+$\rho(a)=[a_0]\in B(M)$ is a ring homomorphism, and it kills the elements of
+nonzero $G$-charge, since the $M$-charge refines the $G$-charge.  So it kills
+$I_B$ and induces $\res_M\colon B\to B(M)$.  An element $f\in R$ has charge
+zero, so $\res_M[f]=[f]$.
+\begin{details}
+As $\cW_M$ preserves each block, the $M$-charge components of an
+element of $A(M)$ lie in $A(M)$, and $B(M)$ is the quotient of $A(M)$ by the
+ideal generated by the components of nonzero $M$-charge.  If $f=\sum_cf_c$
+and $g=\sum_cg_c$ are the decompositions by $M$-charge, then
+$(fg)_0=f_0g_0+\sum_{c\neq0}f_cg_{-c}$, and each $f_c$ with $c\neq0$ vanishes
+in $B(M)$.  The $G$-charge at $k$ is the
+sum of the $M$-charges of the blocks at $k$, so an element of $A$ of nonzero
+$G$-charge has only nonzero $M$-charge components.
+\end{details}
+
+For (2) and~(3), let $\lambda\in\Z^\Omega$ and $p\in\Pol^{\cW_\lambda}$.  Split
+$\cW/\cW_\lambda$ into $\cW_M$-orbits.  The stabilizer in $\cW_M$ of
+$w\cW_\lambda$ is $\cW_{M,w\lambda}=\cW_M\cap\cW_{w\lambda}$, and $wp$ is
+$\cW_{w\lambda}$-invariant, so
+\[
+ \mathsf S_\lambda(p)=\sum_{w\in\cW_M\backslash\cW/\cW_\lambda}\mathsf
+ S^M_{w\lambda}(wp).
+\]
+The term of $w$ has $M$-charge equal to the block sums of $w\lambda$, so
+$\res_M$ keeps exactly the terms in which all block sums of $w\lambda$
+vanish.
+
+Take $\lambda=\lambda_m=s-\one$.  Then $w\lambda_m=ws-\one$, and $ws$ is $s_D$
+at $w(d_D)$ for each part $D$ and $0$ elsewhere.  So the sum of $w\lambda_m$
+over a block $\beta\subseteq\Omega_k$ is
+$\sum_{D:\,w(d_D)\in\beta}s_D-|\beta|$.  For this to vanish, the parts $D$ with
+$w(d_D)\in\beta$ must have sizes adding up to $|\beta|\ge1$, so at least one
+$w(d_D)$ must lie in $\beta$.  If $l(m)$ is less than the number of blocks,
+then for every $w$ some block contains no $w(d_D)$.  This proves~(2).
+
+For~(3), let $M=M_m$, which has $l(m)$ blocks, the block of $D$ having size
+$s_D$.  Let $l(m')=l(m)$.  If $w\lambda_{m'}$ has $M$-charge zero, then each
+block contains exactly one of the elements $w(d_{D'})$, for $D'$ a part of
+$m'$, and that part has the size of the block.  So at each vertex the parts of $m'$ are
+the block sizes, which are the parts of $m$, and $m'=m$.  This proves the
+last claim.  For $m'=m$, the condition says that on each block $w\lambda_m$
+has one entry equal to the size of the block minus one and all other
+entries $-1$.  These coweights form the $\cW_{M}$-orbit of $\lambda_m$, so only
+the double coset of $w=1$ survives, and
+$\res_{M_m}[\mathsf S_{\lambda_m}(p)]=[\mathsf S^{M_m}_{\lambda_m}(p)]$.  In
+$Q_{M_m}$, $\lambda_m$ is the coweight of the multipartition with one part per
+block, whose data are $\Zm$, $\Pol_m$ and $\epsilon$.  So
+Proposition~\ref{prop:filt}(2) for $Q_{M_m}$ shows that this class depends
+only on $\epsilon(p)$.
+\end{proof}
+
+\begin{lemma}[induction]\label{lem:ind}
+Let $X(M)^\circ\subseteq X(M)$ be the open subset where, at each vertex $k$,
+the blocks of $\ell_k$ have pairwise disjoint spectra.
+\begin{enumerate}[leftmargin=2em]
+\item There is a morphism $\iota_M\colon X(M)^\circ\to X$ with
+$\iota_M^*\cV_k\cong\bigoplus_D\cV_{k,D}$, where $\cV_{k,D}$ is the tautological
+bundle of the vertex $(k,D)$ of $Q_M$.  So
+$\iota_M^*\kappa(f)=\kappa_M(f)|_{X(M)^\circ}$ for $f\in R$.
+\item Restriction $H^*(X(M))\to H^*(X(M)^\circ)$ is injective.
+\item $\iota_M^*\circ\Phi=\Phi_M\circ\res_M$, as maps from $B$ to
+$H^*(X(M))\subseteq H^*(X(M)^\circ)$.
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+Write a point of $T^*N=T^*(\mathfrak g\oplus N')$ as $(\ell,\ell^*,n)$, with
+$\ell,\ell^*\in\mathfrak g$ the components for the chosen loops and $n\in
+T^*N'$, and a point of $T^*(\mathfrak m\oplus N')$ as $(\ell_M,\ell_M^*,n)$
+with $\ell_M,\ell_M^*\in\mathfrak m$.  Identify $\mathfrak g^*$ with
+$\mathfrak g$ by the trace form, let $\mu'\colon T^*N'\to\mathfrak g$ be the
+moment map of $G$ on $T^*N'$, and let $\mathrm{pr}_{\mathfrak m}$ and
+$\mathrm{pr}_{\mathfrak m^\perp}$ be the block-diagonal and off-block-diagonal
+parts.  Then
+\[
+ \mu(\ell,\ell^*,n)=[\ell,\ell^*]+\mu'(n),\qquad
+ \mu_M(\ell_M,\ell_M^*,n)=[\ell_M,\ell_M^*]+\mathrm{pr}_{\mathfrak m}\mu'(n).
+\]
+Suppose the blocks of $\ell_M$ at each vertex have pairwise disjoint spectra.
+For blocks $D\neq E$ at $k$ and $\gamma\in\mathfrak m^\perp$, the $(E,D)$ block of
+$[\ell_M,\gamma]$ is $\ell_{k,E}\gamma_{ED}-\gamma_{ED}\ell_{k,D}$.  So by~\ref{I:sylv},
+$\mathrm{ad}_{\ell_M}$ is invertible on $\mathfrak m^\perp$.  Put
+\[
+ \tilde\iota(\ell_M,\ell_M^*,n)=\big(\ell_M,\ \ell_M^*+\gamma,\ n\big),\qquad
+ \gamma=-\mathrm{ad}_{\ell_M}^{-1}\mathrm{pr}_{\mathfrak m^\perp}\mu'(n)\in\mathfrak
+ m^\perp.
+\]
+Since $[\ell_M,\ell_M^*]\in\mathfrak m$ and $[\ell_M,\gamma]\in\mathfrak m^\perp$,
+\[
+ \mu\big(\tilde\iota(\ell_M,\ell_M^*,n)\big)=[\ell_M,\ell_M^*]
+ +\mathrm{pr}_{\mathfrak m}\mu'(n)+\big([\ell_M,\gamma]+\mathrm{pr}_{\mathfrak
+ m^\perp}\mu'(n)\big)=\mu_M(\ell_M,\ell_M^*,n).
+\]
+So $\tilde\iota$ maps $\mu_M^{-1}(0)$ into $\mu^{-1}(0)$, and it is
+$M$-equivariant.
+
+It also preserves stability.  By~\ref{I:cyc}, a point of $\mu^{-1}(0)$ is
+stable if and only if the subspace $U\subseteq V$ generated by the images of
+the $W_k$ under the arrows of the doubled quiver of $Q$ is all of $V$.
+Likewise for $Q_M$, with the subspace $U_M=\bigoplus_DU_M^{(D)}$ generated by
+the images of the framings of the blocks under the arrows of the doubled
+quiver of $Q_M$.  Let $U$ be the subspace for
+$\tilde\iota(\ell_M,\ell_M^*,n)$.  Then $U=U_M$, because the projections onto
+the blocks are polynomials in $\ell_M$, and by~\ref{I:sylv} the blocks of
+$\gamma$ are combinations of compositions of block components of the arrows
+of $Q'$, their duals and the framing maps.
+\begin{details}
+\begin{itemize}[leftmargin=2em]
+\item $U\supseteq U_M$.  The subspace $U$ is stable under $\ell_k$, which is
+$\ell_M$ at $k$.  By~\ref{I:sylv} the projections onto the $V^{(D)}$ are
+polynomials in $\ell_k$, so $U=\bigoplus_D\mathrm{pr}_DU$.  Hence $U$ contains
+the images $\mathrm{pr}_D(\mathrm{im}\,i_k)$ of the framings of the blocks,
+and it is stable under the block components $\mathrm{pr}_E\circ
+x\circ\mathrm{pr}_D$ of every arrow $x$ of the doubled quiver of $Q$.  These
+block components include all arrows of the doubled quiver of $Q_M$.  For
+the chosen loops, the diagonal blocks of $\ell_k$ and $\ell_k^*$ are
+$\ell_{k,D}$ and $\ell^*_{k,D}$, as $\gamma$ has no diagonal blocks.
+\item $U\subseteq U_M$.  We show that $U_M$ is stable under every arrow of
+the doubled quiver of $Q$.  The arrows of $Q'$ and their duals, the framing
+maps, $\ell_k$ and the block-diagonal part $\ell_M^*$ of $\ell_k^*$ are sums
+of their block components, which preserve $U_M$.  It remains to treat $\gamma$.
+By~\ref{I:sylv}, its $(E,D)$ block is a linear combination of maps
+$\ell_{k,E}^r\circ\mathrm{pr}_E\,\mu'(n)\,\mathrm{pr}_D\circ\ell_{k,D}^s$.
+The component of $\mu'(n)$ at $k$ is a sum of terms $\pm xx^*$ for arrows $x$
+of $Q'$ and their duals, and of $i_kj_k$.  So
+$\mathrm{pr}_E\,\mu'(n)\,\mathrm{pr}_D$ is a sum of compositions of block
+components of arrows of $Q'$ and their duals, which preserve $U_M$, and of
+$\mathrm{pr}_Ei_kj_k\mathrm{pr}_D$, whose image lies in
+$\mathrm{pr}_E(\mathrm{im}\,i_k)\subseteq U_M$.  So $\gamma$ maps $U_M$ into
+$U_M$.  Since $U_M$ contains the image of $W$, it contains $U$.
+\end{itemize}
+\end{details}
+So $\tilde\iota(\ell_M,\ell_M^*,n)$ is stable if and only if
+$(\ell_M,\ell_M^*,n)$ is.
+
+Hence $\tilde\iota$ induces a morphism $\iota_M$ from $X(M)^\circ$, the
+quotient by $M$ of the stable points of $\mu_M^{-1}(0)$ with disjoint block
+spectra, to $X=\mu^{-1}(0)^{\rm st}/G$.  The tautological bundle $\cV_k$ on $X$
+comes from the $G$-module $V_k$, which as an $M$-module is
+$\bigoplus_DV^{(D)}$.  So $\iota_M^*\cV_k\cong\bigoplus_D\cV_{k,D}$.  The class
+$\kappa(f)$ is $f$ evaluated at the Chern roots of the $\cV_k$, and $f\in
+R\subseteq\Pol^{\cW_M}$, so $\iota_M^*\kappa(f)=\kappa_M(f)|_{X(M)^\circ}$.  This
+gives~(1).
+
+For~(2), let $\zeta\in\mathfrak z(\mathfrak m)$ be central, with entry
+$\zeta_D$ on the block $D$.  The translation $\tau_\zeta\colon\ell_M\mapsto\ell_M+\zeta$
+commutes with $M$, preserves $\mu_M$, since $[\zeta,\ell_M^*]=0$, and
+preserves stability, since it does not change which subspaces are stable
+under each $\ell_{k,D}$.  So $\tau_\zeta$ acts on $X(M)$, and it is homotopic to
+the identity through the $\tau_{t\zeta}$, $t\in[0,1]$.  Let $\fL_M$ be the core
+of $X(M)$.  By~\ref{I:core}(b), each block $\ell_{k,D}$ is nilpotent on
+$\fL_M$.  Choose $\zeta$ with distinct entries at each vertex.  Then on
+$\tau_\zeta(\fL_M)$ the block $\ell_{k,D}$ has the single eigenvalue $\zeta_D$,
+so $\tau_\zeta(\fL_M)\subseteq X(M)^\circ$.  The composite
+\[
+ H^*(X(M))\to H^*(X(M)^\circ)\to H^*(\tau_\zeta(\fL_M))
+ \xrightarrow{\ \tau_\zeta^*\ }H^*(\fL_M)
+\]
+is the pullback along $\tau_\zeta\colon\fL_M\to X(M)$, which equals restriction
+to $\fL_M$ because $\tau_\zeta$ is homotopic to the identity.  That restriction is
+an isomorphism by~\ref{I:core}(a).  So the first map is injective.
+
+For~(3), every class of $B$ is $[f]$ for some $f\in R$, since $R\to B$ is
+onto, and $\Phi[f]=\kappa(f)$.  By Lemma~\ref{lem:restr}(1),
+$\res_M[f]=[f]$, and $\Phi_M[f]=\kappa_M(f)$.  So by~(1),
+$\iota_M^*\Phi[f]=\kappa_M(f)|_{X(M)^\circ}=\Phi_M(\res_M[f])|_{X(M)^\circ}$,
+and by~(2) restriction to $X(M)^\circ$ is injective.
+\end{proof}
+
+For $M=M_m$, the multipartition of $Q_{M_m}$ with one part per block plays the
+role of $m_G$: its coweight, data and shift are $\lambda_m$, $\Pol_m$, $J_m$
+and $\delta_m$, and the map $\psi$ of \S\ref{ss:induced} for $Q_{M_m}$ is
+\[
+ \psi_{M_m}\colon(\Pol_m/J_m)\langle\delta_m\rangle\to H^*(X(M_m)),\qquad
+ \psi_{M_m}(\epsilon(p))=\Phi_{M_m}[\mathsf S^{M_m}_{\lambda_m}(p)].
+\]
+
+\begin{proposition}[detecting the pieces]\label{prop:detect}
+Fix $L$, and for each multipartition $m$ with $l(m)=L$ take $M_m\supseteq T$
+built from the blocks used to define $\lambda_m$.  The map
+\[
+ \Psi_L\colon F_L\to\bigoplus_{l(m)=L}H^*(X(M_m)),\qquad
+ b\mapsto\big(\Phi_{M_m}(\res_{M_m}b)\big)_m=\big(\iota_{M_m}^*\Phi(b)\big)_m ,
+\]
+kills $F_{L-1}$ and factors through $F'_L/F'_{L-1}$.  Its composite with the
+surjection of Proposition~\ref{prop:filt} is the direct sum over $m$ of the
+restrictions of the $\psi_{M_m}$ to the $\cW_m$-invariants.  So if every
+$\psi_{M_m}$ is injective, then so is~\eqref{eq:grcomposite}.
+\end{proposition}
+
+\begin{proof}
+The two expressions for $\Psi_L$ agree by Lemma~\ref{lem:ind}(3), and the
+second shows that $\Psi_L$ factors through $\Phi$.  Each $M_m$ has $L$ blocks,
+so by Lemma~\ref{lem:restr}(2), $\Psi_L$ kills $F_{L-1}$; hence it factors
+through $F'_L/F'_{L-1}$.  By Lemma~\ref{lem:restr}(3), $\Psi_L$ sends $[\mathsf
+S_{\lambda_m}(p)]$ to $\Phi_{M_m}[\mathsf S^{M_m}_{\lambda_m}(p)]=\psi_{M_m}(\epsilon(p))$
+in the summand of $m$, and to $0$ in the others.  A direct sum of injective
+maps into different summands is injective.
+\end{proof}
+
+\subsection{The socle and the top degree}\label{ss:top}
+By Proposition~\ref{prop:detect}, it remains to show that the map $\psi$ of
+\S\ref{ss:induced} is injective, for every quiver with a loop at every vertex.
+Let $\fL\subseteq X$ be the core, as in~\ref{I:core}, so that
+$H^*(X)\cong H^*(\fL)$.  Put $d_{\max}=\dim N'-z-k_0$, the bound
+$\delta_m+n_m-l(m)$ of Proposition~\ref{prop:toric} for $m=m_G$.
+
+\begin{lemma}[socle]\label{lem:socle}
+The map $\psi$ is $R$-linear, where $R$ acts on $\Pol_G/J_G$ through
+$\epsilon$, which is onto, and on $H^*(X)$ through $\kappa$.  So $\psi$ is
+injective if it is injective in the top degree of $\Pol_G/J_G$, which it maps
+to degree $d_{\max}$.
+\end{lemma}
+
+\begin{proof}
+For $f\in R$ and $p\in\Pol^{\cW_{\lambda_G}}$ we have $\mathsf
+S_{\lambda_G}(fp)=f\,\mathsf S_{\lambda_G}(p)$, as $f$ is $\cW$-invariant, so
+$\psi(\epsilon(f)\,\epsilon(p))=\kappa(f)\,\psi(\epsilon(p))$.  The map
+$\epsilon\colon R\to\Pol_G$ is onto, since it sends $\sum_{d\in\Omega_k}x_d$ to
+$v_kx_k$.  So $\ker\psi$ is an ideal of $\Pol_G/J_G$.  By~\ref{I:alg}(c), if
+it is nonzero it meets the socle, which by Proposition~\ref{prop:toric} is the
+top degree $n_{m_G}-k_0$ of $\Pol_G/J_G$.  The shift is $\delta_{m_G}$, and
+$\delta_{m_G}+n_{m_G}-k_0=d_{\max}$ by Proposition~\ref{prop:toric}.
+\end{proof}
+
+\begin{proposition}\label{prop:top}
+$B$ vanishes in degrees above $d_{\max}$.  In degree $d_{\max}$ it is
+spanned by the classes $[\mathsf S_{\lambda_G}(p)]$, so $\psi$ maps the top
+degree of $\Pol_G/J_G$ onto $H^{2d_{\max}}(X)$.  Also $\dim\fL\le d_{\max}$.
+\end{proposition}
+
+\begin{proof}
+By Proposition~\ref{prop:filt}, $F_L/F_{L-1}$ is a quotient of
+$\bigoplus_{l(m)=L}(\Pol_m/J_m)^{\cW_m}\langle\delta_m\rangle$.  By
+Proposition~\ref{prop:toric}, $\Pol_m/J_m$ vanishes above degree
+$n_m-l(m)$, so the summand of $m$ vanishes above degree
+$\delta_m+n_m-l(m)=\dim N'-z-L$.  For $L=k_0$ this is $d_{\max}$, and the only
+multipartition with $k_0$ parts is $m_G$, with one part at each vertex.  For
+$L>k_0$ it is less than $d_{\max}$.  Since $F_{k_0-1}=0$ and $F_{|\bv|}=B$,
+$B$ vanishes above degree $d_{\max}$, and its part of degree $d_{\max}$ is
+that of $F_{k_0}$, which is spanned by the $[\mathsf S_{\lambda_G}(p)]$.  As
+$\Phi$ is onto, $\psi$ maps onto $H^{2d_{\max}}(X)$.  If
+$e=\dim\fL$ exceeded $d_{\max}$, then $H^{2e}(X)\cong H^{2e}(\fL)$ would be
+nonzero by~\ref{I:core}(d).  This is degree $e$ in our grading, so the
+surjectivity of $\Phi$ would contradict $B_e=0$.
+\end{proof}
+
+\begin{lemma}\label{lem:comp}
+Let $o$ be an acyclic orientation of $\Gamma_{m_G}$, whose vertices are
+$Q_0^+$ and $\infty$, in which $\infty$ is the only source.  Then $\fL$ contains an irreducible constructible subset
+$\fL_o$, of dimension at least $d_{\max}$, with the following property.  For
+every edge $k\to l$ of $o$ with $k,l\neq\infty$, the arrows of the doubled
+quiver from $V_l$ to $V_k$ vanish on $\fL_o$, and at every point of $\fL_o$
+some arrow from $V_k$ to $V_l$ is nonzero.  In particular
+$\fL_o\not\subseteq\overline{\fL_{o'}}$ for $o\neq o'$.
+\end{lemma}
+
+\begin{proof}
+In this proof $k$ and $l$ run over $Q_0^+$.  The parallel edges between two
+vertices are oriented the same way, since $o$ is acyclic.  Choose a total order $\prec$ on $Q_0^+$ with $l\prec k$
+whenever the edges between $k$ and $l$ point from $k$ to $l$, and bases
+$e_{k,1},\dots,e_{k,v_k}$ of the $V_k$.  Order all the basis vectors so that
+$e_{l,s}$ comes before $e_{k,r}$ if $l\prec k$, and $e_{k,s}$ before $e_{k,r}$
+if $s<r$.  Let $V_{\le r}$ be the span of the first $r$ basis vectors, and let
+$B_o=\prod_kB_k\subseteq G$ be the stabilizer of this flag, where $B_k$ is the
+group of upper triangular matrices in the basis of $V_k$.
+
+Let $\mathbb A\subseteq T^*N$ be the linear subspace where the maps $W\to V$
+are arbitrary, the maps $V\to W$ vanish, and every arrow of the doubled
+quiver maps $V_{\le r}$ into $V_{\le r-1}$ for all $r$.  So:
+\begin{itemize}[leftmargin=2em]
+\item the loops of the doubled quiver at $k$, namely $\ell_k$, $\ell_k^*$ and
+the $c_{kk}$ loops coming from $Q'$, are strictly upper triangular;
+\item for $l\prec k$, the $c_{kl}$ arrows of the doubled quiver from $V_k$
+to $V_l$ are arbitrary, and the $c_{kl}$ arrows from $V_l$ to $V_k$ vanish.
+\end{itemize}
+Hence
+\[
+ \dim\mathbb A=\sum_k\Big((2+c_{kk})\tbinom{v_k}2+w_kv_k\Big)
+ +\sum_av_{t(a)}v_{h(a)},
+\]
+the last sum over the arrows $a$ of $Q'$ that are not loops, and
+$\dim B_o=\sum_k\binom{v_k+1}2$.  On $\mathbb A$, the component of $\mu$ at $k$
+is strictly upper triangular with zeros just above the diagonal, so $\mu$ maps
+$\mathbb A$ into a space of dimension $\sum_k\binom{v_k-1}2$.
+\begin{details}
+On
+$\mathbb A$, the moment map at $k$ is a sum of terms $\pm xx^*$ over the arrows
+$x$ at $k$, and $i_kj_k=0$.  For an arrow between $k$ and $l\neq k$, one of
+$x$ and $x^*$ vanishes, so $xx^*=0$.  The remaining terms are commutators of
+strictly upper triangular matrices.
+\end{details}
+
+Let $p_0\in\mathbb A$ be the following point:
+\begin{itemize}[leftmargin=2em]
+\item $\ell_k$ is the regular nilpotent $e_{k,r}\mapsto e_{k,r-1}$, and the
+other loops are zero;
+\item if the edges between $k$ and $l$ point from $k$ to $l$, then one
+arrow of the doubled quiver from $k$ to $l$ is $e_{k,v_k}\mapsto
+e_{l,v_l}$; all other components of arrows between different vertices are zero;
+\item if $w_k>0$, some vector of $W_k$ maps to $e_{k,v_k}$, and the other
+framing maps are zero.
+\end{itemize}
+Then $\mu(p_0)=0$, since $[\ell_k,\ell_k^*]=0$ and all other terms vanish.
+Since $\infty$ is the only source, every $k$ has an incoming edge, either
+from $\infty$, which means $w_k>0$, or from some $l\succ k$.  So by descending
+induction along $\prec$, each $e_{k,v_k}$ lies in the subspace generated by
+$W$, and hence so does $V_k=\C[\ell_k]e_{k,v_k}$.  So $p_0$ is stable.
+
+Let $Y$ be an irreducible component of $\mathbb A\cap\mu^{-1}(0)$ through
+$p_0$.  It is cut out of $\mathbb A$ by $\sum_k\binom{v_k-1}2$ equations, so
+$\dim Y\ge\dim\mathbb A-\sum_k\binom{v_k-1}2$.  Let $Y^\circ\subseteq Y$ be the
+subset of stable points at which every $\ell_k$ is regular nilpotent and,
+for every pair $k,l$ whose edges point from $k$ to $l$, some component from
+$V_k$ to $V_l$ is nonzero.  These conditions are open; on $\mathbb A$,
+$\ell_k$ is nilpotent, and it is regular if and only if it has rank $v_k-1$.
+They hold at $p_0$, so $Y^\circ$ is open and dense in $Y$.  The group $B_o$
+preserves $\mathbb A$ and $\mu^{-1}(0)$, and it is connected, so it preserves
+each irreducible component of $\mathbb A\cap\mu^{-1}(0)$, and it preserves
+$Y^\circ$.
+
+Let $\fL_o\subseteq X$ be the image of $Y^\circ$, which is irreducible and
+constructible.  Let $\lambda$ be the cocharacter of $G$ acting on the $r$-th
+basis vector by $t^{|\bv|+1-r}$.  Then $\lambda(t)\cdot p\to0$ as $t\to0$ for
+every $p\in\mathbb A$, and $\fL_o\subseteq\fL$ by~\ref{I:core}(c).
+\begin{details}
+On $\mathbb A$, a component of an arrow from
+the $r$-th to the $r'$-th basis vector, with $r'<r$, is scaled by
+$t^{r-r'}$, and a framing map to the $r$-th basis vector by $t^{|\bv|+1-r}$.
+\end{details}
+
+If $p$ and $gp$ both lie in $Y^\circ$, then $g\in B_o$, since $g_k$ must
+preserve the kernels of the powers of the regular nilpotent $\ell_k$.
+\begin{details}
+A strictly
+upper triangular regular nilpotent $\ell$ on $V_k$ has
+$\ker\ell^r=\mathrm{span}(e_{k,1},\dots,e_{k,r})$, since this span lies in the
+kernel and the kernel has dimension $r$.  The loop of $gp$ at $k$ is
+$g_k\ell_kg_k^{-1}$, so $g_k$ preserves these spans, and $g_k\in B_k$.
+\end{details}
+Stable points have trivial stabilizer, so the fibers of $Y^\circ\to\fL_o$ are
+free $B_o$-orbits, and
+\[
+ \dim\fL_o=\dim Y^\circ-\dim B_o
+ \ge\dim\mathbb A-\textstyle\sum_k\binom{v_k-1}2-\dim B_o=d_{\max}.
+\]
+\begin{details}
+Since $2\binom v2-\binom{v-1}2-\binom{v+1}2=-1$, the right side is
+\[
+ \sum_k\big(\tfrac12c_{kk}v_k(v_k-1)+w_kv_k-1\big)+\sum_av_{t(a)}v_{h(a)}.
+\]
+This is $d_{\max}=\dim N'-z-k_0$: the loops of $Q'$ at $k$ contribute
+$\frac12c_{kk}v_k^2$ to $\dim N'$, and $z=\sum_k\frac12c_{kk}v_k$.
+\end{details}
+
+For the last claim, let $o\neq o'$.  All edges at $\infty$ point away from
+$\infty$ in both, so there are $k,l\in Q_0^+$ whose edges point from $k$ to
+$l$ in $o$ and from $l$ to $k$ in $o'$.  The condition that all arrows of the
+doubled quiver from $V_k$ to $V_l$ vanish is closed and $G$-invariant.  It
+holds on $\fL_{o'}$, hence on its closure, and it fails at every point of
+$\fL_o$.
+\end{proof}
+
+\begin{corollary}\label{cor:topclass}
+The map $\psi$ of \S\ref{ss:induced} is injective.  If $\Gamma_{m_G}$ has an
+acyclic orientation in which $\infty$ is the only source, then
+$\dim\fL=d_{\max}$, and the closures of the $\fL_o$ are distinct irreducible
+components of $\fL$.
+\end{corollary}
+
+\begin{proof}
+If $\Gamma_{m_G}$ has no orientation $o$ as above, then $\Pol_G/J_G$ vanishes
+in its top degree $n_{m_G}-k_0$, by Proposition~\ref{prop:toric}.  If it were
+nonzero, its socle would be nonzero by~\ref{I:alg}(c) and would lie in that
+degree.  So $\Pol_G/J_G=0$, and there is nothing to prove.
+
+Otherwise, Lemma~\ref{lem:comp} and Proposition~\ref{prop:top} give
+$\dim\fL=d_{\max}$.  So each $\overline{\fL_o}$ is an irreducible closed
+subset of $\fL$ of dimension $\dim\fL$, hence a component, and they are
+distinct by Lemma~\ref{lem:comp}.  By~\ref{I:core}(d), $\dim
+H^{2d_{\max}}(X)$ is at least the number of orientations $o$, which by
+Proposition~\ref{prop:toric} is the dimension of the top degree of
+$\Pol_G/J_G$.  By Proposition~\ref{prop:top}, $\psi$ maps that top degree onto
+$H^{2d_{\max}}(X)$, so it is injective there, and by Lemma~\ref{lem:socle} it
+is injective.
+\end{proof}
+
+\subsection{Proof of Theorem~\ref{thm:loops}}\label{ss:proof}
+Fix $L$.  For each multipartition $m$ with $l(m)=L$,
+Corollary~\ref{cor:topclass} for the quiver $Q_{M_m}$ shows that $\psi_{M_m}$
+is injective.  By Proposition~\ref{prop:detect}, the
+composite~\eqref{eq:grcomposite} is injective, and
+Lemma~\ref{lem:reduction} gives the theorem.\qed
+
+\medskip
+The proof also shows that the surjection of Proposition~\ref{prop:filt} is an
+isomorphism
+$F_L/F_{L-1}\cong\bigoplus_{l(m)=L}(\Pol_m/J_m)^{\cW_m}\langle\delta_m\rangle$, and
+that $\Psi_L$ is injective on $F_L/F_{L-1}$.
+
+\begin{corollary}\label{cor:cusp}
+Let $\mathcal M_L$ be the set of Levi subgroups $M\supseteq T$ with at
+least $L$ blocks.  Then $F_{L-1}=\bigcap_{M\in\mathcal M_L}\ker\res_M$.  In
+particular the \emph{cuspidal part}
+$\bigcap_{M\neq G}\ker\res_M$ of $B$ is $F_{k_0}\cong(\Pol_G/J_G)\langle\delta_{m_G}\rangle$.
+This is the shifted cohomology of the hypertoric variety of the center of
+$G$ acting on $N'^{\xi_{m_G}}$.
+\end{corollary}
+
+\begin{proof}
+The inclusion $\subseteq$ is Lemma~\ref{lem:restr}(2), since $F_{L-1}$ is
+spanned by classes $[\mathsf S_{\lambda_m}(p)]$ with $l(m)<L$.  Conversely, let
+$b$ lie in the right side, and let $L'$ be minimal with $b\in F_{L'}$.
+Suppose $L'\ge L$.  Each $M_m$ with $l(m)=L'$ has $L'\ge L$ blocks, so
+$\Psi_{L'}(b)=0$, and as $\Psi_{L'}$ is injective on $F_{L'}/F_{L'-1}$, we get
+$b\in F_{L'-1}$, a contradiction.  So $L'\le L-1$.  For the cuspidal part,
+the Levi subgroups $M\supseteq T$ other than $G$ are those with at least
+$k_0+1$ blocks, so the intersection is $F_{k_0}$.  It is isomorphic to
+$(\Pol_G/J_G)\langle\delta_{m_G}\rangle$ by the proof of Theorem~\ref{thm:loops}, as
+$F_{k_0-1}=0$, and the last claim is Proposition~\ref{prop:toric}.
+\end{proof}
+
+\begin{remark}[Hausel's formula]\label{rem:hausel}
+For quivers with a loop at every vertex, the formula of
+Theorem~\ref{thm:loops} for all $\bv$ at once is equivalent to Hausel's
+formula \cite{hauselBettiNumbers2006}, given the identity of
+Remark~\ref{rem:kirwan}(4).  \pre{\S6} uses this in the other direction.  We
+follow \cite[\S3]{nakajimaMultipartitionSpaces2026}.
+
+Fix $\bw$, and let $m$ run over all tuples $(m^{(k)})_{k\in Q_0}$ of
+partitions, of any sizes, with $|m|=(|m^{(k)}|)_k$.  For partitions put
+$\langle\mu,\nu\rangle=\sum_{a,b}\min(\mu_a,\nu_b)$, and put
+\[
+ d_m=\sum_{a\in Q'_1}\langle m^{(t(a))},m^{(h(a))}\rangle ,
+\]
+which is $\dim N_{Q'}^{\xi_m}$ for
+$N_{Q'}=\bigoplus_{a\in Q'_1}\Hom(V_{t(a)},V_{h(a)})$ and $\bv=|m|$, by the
+computation before Definition~\ref{def:toric-data}.  So $\dim
+N'^{\xi_m}=d_m+\bw\cdot l(m)$, where $l(m)$ is now the vector of the numbers of
+parts at each vertex.  Consider the series in variables $z_k$, $k\in Q_0$,
+\[
+ A_{\rm fr}=\sum_m z^{|m|}\frac{q^{-d_m-\bw\cdot l(m)}}{(q)_m},\qquad
+ A_0=\sum_m z^{|m|}\frac{q^{-d_m}}{(q)_m},\qquad
+ H=\sum_m z^{|m|}q^{-d_m-\bw\cdot l(m)}h_m(q).
+\]
+\begin{itemize}[leftmargin=2em]
+\item Let $M_\eta=\mu^{-1}(\eta)/\!/G$ be the affine quotient at
+$\eta=(\mathrm{id}_{V_k})_k$, of dimension $2\delta(\bv,\bw)$.  For any quiver,
+Hausel's formula is
+\[
+ \sum_{\bv}q^{-\delta(\bv,\bw)}P_{M_\eta}(q)\,z^{\bv}
+ =\frac{\sum_m z^{|m|}q^{-E(m)-\bw\cdot l(m)}/(q)_m}{\sum_m z^{|m|}q^{-E(m)}/(q)_m},
+\]
+in the form of \pre{(6.9)}, where
+$E(m)=\sum_{a\in Q_1}\langle m^{(t(a))},m^{(h(a))}\rangle-\sum_k\langle m^{(k)},m^{(k)}\rangle$.  For our $Q$, the chosen loops cancel the last
+sum, so $E(m)=d_m$, and similarly $\delta(\bv,\bw)=\dim N'$.  By~\ref{I:rot}
+with $\theta=\nu_{\det}$, followed by multiplying the cotangent coordinate by
+$i$, $M_\eta$ is homeomorphic to $X$.  So Hausel's formula says
+$\sum_{\bv}q^{-\dim N'}P_X(q)\,z^{\bv}=A_{\rm fr}/A_0$.
+\item Theorem~\ref{thm:loops} says that this sum is $H$, since
+$q^{-\dim N'}q^{\delta_m}=q^{-\dim N'^{\xi_m}}$.
+\item Multiplying Remark~\ref{rem:kirwan}(4) by $z^{|m|}q^{-d_m-\bw\cdot l(m)}$
+and summing over $m$ gives $A_{\rm fr}=A_0H$, as the term of a pair $(m,I)$
+factors into a term of $A_0$ and a term of $H$.
+\begin{details}
+Let $m_I$ and $m'$ be
+the multipartitions formed by the parts in $I$ and outside $I$, and let $e$
+be the number of edges of $\Gamma_m$ between $I$ and the other parts.  Then
+$d_m=d_{m_I}+d_{m'}+e$ and $\deg q_I=e+\bw\cdot l(m_I)$, so the term of $(m,I)$
+is the product of the term of $m_I$ in $A_0$ and that of $m'$ in $H$.  Also
+$(m,I)\mapsto(m_I,m')$ is a bijection from pairs of a multipartition and a
+$\cW_m$-orbit of sets of its parts onto pairs of multipartitions.
+\end{details}
+\end{itemize}
+Since $A_0$ has constant term $1$, the first two statements are equivalent,
+given the third.
+
+In Hausel's formula the multipartitions arise in a different way.  Hausel's
+proof uses an arithmetic Fourier transform.  In the point count of an
+unpublished 2004 note of Nakajima, explained in \cite[Rem.~3.2]{nakajimaMultipartitionSpaces2026}, one
+counts isomorphism classes of framed and of unframed representations of $Q$
+over a finite field by Burnside's lemma.  The sum over the elements $g$ of
+$G(\mathbb F)$ factors over the eigenvalues of $g$, the framing changes only
+the factor of the eigenvalue $1$, and the term of $m$ in $A_{\rm fr}$ or $A_0$
+is the contribution of the unipotent $g$ of Jordan type $m$, after
+substituting $|\mathbb F|^{-1}$ for $q$.  By the Krull--Schmidt theorem, the
+ratio counts the absolutely indecomposable framed representations, and these
+count the points of $M_\eta$ \cite{crawley-boeveyAbsolutelyIndecomposable2004}.  In
+Theorem~\ref{thm:higgs} below, $m$ records instead the multiplicities of the
+eigenvalues of the chosen loops.
+\end{remark}
+
+\section{Deformations and quantization}\label{sec:deform}
+This section follows \pre{\S7}.  Write $H_F=H^*_F(\mathrm{pt})$ and
+$H_{F,\hbar}=H^*_{F\times\C^\times_\hbar}(\mathrm{pt})$.
+
+\begin{lemma}[graded Nakayama]\label{lem:flavor}
+Let $\nu$ be generic, and suppose $\Phi\colon B^\nu_0\to H^*(X_\nu)$ is an
+isomorphism.  Then for every flavor torus $F$, the maps
+$\Phi\colon B^\nu_F\to H^*_F(X_\nu)$ and
+$\Phi\colon B^\nu(A_{F,\hbar})\to H^*_{F\times\C^\times_\hbar}(X_\nu)$ are
+isomorphisms.
+\end{lemma}
+
+\begin{proof}
+We treat the second map; the first is the same with $H_F$ in place of
+$H_{F,\hbar}$.  Let $H^+$ be the part of $H_{F,\hbar}$ of positive degree,
+and let $K$ be the kernel of the surjection $\Phi$ of Theorem~\ref{thm:map}.
+Tensor the exact sequence
+$0\to K\to B^\nu(A_{F,\hbar})\to H^*_{F\times\C^\times_\hbar}(X_\nu)\to0$ with
+$\C=H_{F,\hbar}/H^+$.  The last term is free over $H_{F,\hbar}$
+by~\ref{I:kirwan}, so the sequence stays exact:
+\[
+ 0\to K/H^+K\to B^\nu(A_{F,\hbar})/H^+\to H^*(X_\nu)\to0 .
+\]
+By~\ref{I:base}, the middle term is $B^\nu_0$, and the right map is the
+isomorphism $\Phi$ for $F$ trivial and $\hbar=0$.  So $K=H^+K$.  As $K$ is a
+graded submodule of a quotient of $R_\hbar$, it is bounded below, and graded
+Nakayama gives $K=0$; here $R_\hbar\to B^\nu(A_{F,\hbar})$ is onto by
+Lemma~\ref{lem:qsurj}.
+\end{proof}
+
+\begin{lemma}\label{lem:betti}
+The Betti numbers of $X_\theta$ do not depend on the generic parameter
+$\theta$.
+\end{lemma}
+
+\begin{proof}
+Let $Z\cong\C^{Q_0}$ be the space of central values of the moment map, and
+let $\pi\colon\mu^{-1}(Z)/\!/G\to Z$ be the family of affine quotients.  As
+$R\pi_!\Q$ is constructible, there is a Zariski open dense
+$U\subseteq Z$ over which the compactly supported Betti numbers of the fibers
+$\mu^{-1}(\zeta)/\!/G$ are constant; $U$ is connected.  Let $\theta$ be
+generic.  Every $\theta'$ in a small real ball around $\theta$ is generic,
+with the same signs of the $\theta'\cdot\bb$, so $X_{\theta'}=X_\theta$ by
+\S\ref{ss:setup}.  By~\ref{I:rot}, $X_{\theta'}$ is homeomorphic to
+$\mu^{-1}(-i\theta')/\!/G$.  The points $-i\theta'$ form a real ball in
+$i\mathbb R^{Q_0}$, which is Zariski dense in $Z$, so some $-i\theta'$ lies in
+$U$.  Hence the compactly supported Betti numbers of $X_\theta$ are those of
+the fibers over $U$, for every generic $\theta$.  Poincar\'e duality on the
+smooth $X_\theta$ gives the ordinary Betti numbers.
+\end{proof}
+
+The $X_\theta$ for generic $\theta$ are even diffeomorphic
+\cite[Cor.~4.2]{nakajimaInstantonsALE1994}, by the same hyperk\"ahler rotation.  That paper
+assumes that the quiver has no loops, but, as \cite[Rem.~3.3]{nakajimaMultipartitionSpaces2026} points out, the proof of
+\cite[Cor.~4.2]{nakajimaInstantonsALE1994} uses only
+\cite[Thm.~4.1(1),(2)]{nakajimaInstantonsALE1994} and the rotation of complex
+structures, and these do not need that assumption.
+
+\emph{Abelianization with root denominators.}  When $Q$ does not have a loop
+at every vertex, Proposition~\ref{prop:teleman} is not available, and we use
+the abelianization map of \cite{BFN} directly.  Use $T$, $\Omega$,
+$\Omega_k$, $\Pol$ and $\cW$ as in \S\ref{ss:abel}, let $F$ be a flavor
+torus, and put $\Pol_F=H^*_{T\times F}(\mathrm{pt})$.  Let $\cB$ be the
+multiset of $T\times F$-weights of $N$, and define
+$r_\lambda\in\mathrm{Frac}(\Pol_F)[\Z^\Omega]$ as in \S\ref{ss:abel}, with $\cB$
+in place of $\cB'$; here $\langle\beta,\lambda\rangle$ pairs the $T$-part of
+$\beta$ with $\lambda$.  For the rest of this section $r_\lambda$ and $\mathsf
+S_\lambda$ have the meanings given here.  These $r_\lambda$ multiply by~\eqref{eq:rr} with $\cB$
+in place of $\cB'$, so their $\Pol_F$-span is the abelian Coulomb branch of
+$(T,N)$ \cite[Thm.~4.1]{BFN}.  The abelianization map $(\iota_*)^{-1}$ is an
+injective ring homomorphism from $A_F$ to $\mathrm{Frac}(\Pol_F)[\Z^\Omega]$
+\cite[Lemma~5.17]{BFN}, and the charge corresponds to the charge of
+$\lambda$.
+
+Call $\lambda\in\Z^\Omega$ \emph{minuscule} if on each $\Omega_k$ its entries
+take at most two values, differing by one, and put
+\[
+ \mathrm{eu}_\lambda=\prod_{k\in Q_0}\ \prod_{d,e\in\Omega_k,\ \lambda_d>\lambda_e}(x_d-x_e).
+\]
+For minuscule $\lambda$ and $p\in\Pol_F^{\cW_\lambda}$ put
+\[
+ \mathsf S_\lambda(p)=\sum_{w\in\cW/\cW_\lambda}w\Big(\frac{p}{\mathrm{eu}_\lambda}\,r_\lambda\Big).
+\]
+For such $\lambda$ the orbit $\Gr^\lambda$ is closed, its $T$-fixed points
+are the $w\lambda$, and at $\hbar=0$ the Euler class of its tangent space at
+$w\lambda$ is $\pm w(\mathrm{eu}_\lambda)$.  So by \cite[Prop.~6.6]{BFN},
+$(\iota_*)^{-1}$ sends the dressed monopole $M_{\lambda,p}$ of~\ref{I:gen} to
+$\pm\mathsf S_\lambda(p)$, with a sign depending only on $\lambda$.  In the
+setting of \S\ref{ss:abel}, the weights of the chosen loops contribute
+$\pm\mathrm{eu}_\lambda$ to $r_\lambda$ for minuscule $\lambda$, so these $\mathsf
+S_\lambda(p)$ agree up to sign with those defined there.
+
+\begin{proposition}\label{prop:loopremoval}
+For every quiver, $\Phi\colon B_0\to H^*(X_{\nu_{\det}})$ is an
+isomorphism.
+\end{proposition}
+
+\begin{proof}
+We follow \pre{Prop.~7.3}.  Write $X=X_{\nu_{\det}}$.  The maps $R\to B_0$
+and $\kappa\colon R\to H^*(X)$ are onto, by Lemma~\ref{lem:generic}
+and~\ref{I:kirwan}, and $\Phi[f]=\kappa(f)$.  So we must show that their
+kernels $K_B$ and $K_X$ agree.
+
+Let $Q^+$ be $Q$ with a loop $\ell_k^+$ added at every vertex.  Let
+$\C^\times_u$ scale $\ell_k^+$ with weight $1$ and its dual $\ell_k^{+*}$ with
+weight $-1$.  This commutes with $G$ and preserves $\mu$, since
+$[t\ell_k^+,t^{-1}\ell_k^{+*}]=[\ell_k^+,\ell_k^{+*}]$, so $\C^\times_u$ is a
+flavor torus.  Write $H^*_u$ for $\C^\times_u$-equivariant cohomology and $u$ for
+the equivariant parameter, so that $H^*_{G\times\C^\times_u}(\mathrm{pt})=R[u]$.
+Let $A^+$ and $B^+$ be the Coulomb branch of $Q^+$ with flavor $\C^\times_u$
+at $\hbar=0$ and its B-algebra, and let $X^+=X_{\nu_{\det}}(Q^+)$, with Kirwan
+map $\kappa^+\colon R[u]\to H^*_u(X^+)$.  Every vertex of $Q^+$ carries a loop,
+so by Theorem~\ref{thm:loops} and Lemmas~\ref{lem:flavor}
+and~\ref{lem:generic}, the kernel $K^+$ of $R[u]\to B^+$ is the kernel of
+$\kappa^+$.  Let $\mathfrak n\subseteq R[u]$ be the maximal ideal generated by
+the positive part $R_+$ of $R$ and by $u-1$.  We show that $K_X[u]$, $K^+$ and
+$K_B[u]$ have the same localization at $\mathfrak n$.
+
+\emph{Quiver variety side.}  Let $p$ be a stable point of the zero fiber of
+the moment map of $Q^+$ whose class is fixed by $\C^\times_u$.  As $G$ acts
+freely on stable points, $t\cdot p=\rho(t)\cdot p$ for a unique $\rho(t)\in G$,
+and $\rho$ is a cocharacter of $G$.  Its conjugacy class is locally constant,
+so the fixed locus $(X^+)^{\C^\times_u}$ is the disjoint union of the open and
+closed subsets $Y_\rho$ on which it is the class of $\rho$.  Let $n_d$,
+$d\in\Omega$, be the weights of $\C^\times_u$ on the fibers of the tautological
+bundles over $Y_\rho$.  If $\rho\neq1$, then $f=\sum_{d\in\Omega}x_d^2$ and
+$u^2\sum_dn_d^2$ act on $H^*_u(Y_\rho)$ by elements that differ by a nilpotent,
+and $f-u^2\sum_dn_d^2\in R[u]$ does not lie in $\mathfrak n$, as it is
+$-\sum_dn_d^2\neq0$ modulo $\mathfrak n$.  So $H^*_u(Y_\rho)_{\mathfrak n}=0$.
+\begin{details}
+$\C^\times_u$ acts on the fibers of $\cV_k$ through $\rho^{-1}$.  As
+$\C^\times_u$ acts trivially on $Y_\rho$,
+$H^*_u(Y_\rho)=H^*(Y_\rho)[u]$, and the equivariant Chern roots of $\cV_k$ there
+are $y_d+n_du$, with $y_d$ the ordinary Chern roots.  So for $f\in R$,
+$\kappa^+(f)|_{Y_\rho}-f\big((n_du)_d\big)$ lies in $H^{>0}(Y_\rho)[u]$, which is
+a nilpotent ideal.
+\end{details}
+If $\rho=1$, then $t\cdot p=p$, so
+$\ell^+=\ell^{+*}=0$.  For such $p$ the moment map and the stability condition
+of~\ref{I:cyc} are those of $Q$.  So $Y_1=X$, with $\C^\times_u$ acting
+trivially on $X$ and on its tautological bundles, and $\kappa^+$ followed by
+restriction to $Y_1$ is $\kappa$ extended linearly over $\C[u]$.
+
+By the localization theorem \cite[Thm.~3]{brionEquivariantCohomology1998}, restriction
+$H^*_u(X^+)\to H^*_u\big((X^+)^{\C^\times_u}\big)$ becomes an isomorphism after
+inverting $u$.
+\begin{details}
+Its hypothesis, an equivariant embedding into a
+finite-dimensional representation of the compact torus $U(1)\subseteq\C^\times_u$,
+holds because $X^+$ is a $\C^\times_u$-stable closed subvariety of
+$\mathbb P(U)\times U'$ for some $\C^\times_u$-modules $U$ and $U'$, by its
+construction as a GIT quotient.
+\end{details}
+As $u$ is a unit at $\mathfrak n$,
+\[
+ H^*_u(X^+)_{\mathfrak n}\cong H^*_u(Y_1)_{\mathfrak n}=(H^*(X)[u])_{\mathfrak n},
+\]
+compatibly with $\kappa^+$ and $\kappa$.  Localization is exact, so
+$K^+_{\mathfrak n}=K_X[u]_{\mathfrak n}$.
+
+\emph{Coulomb side.}  Use the abelianization above for $Q$ without flavor,
+extended linearly over $\C[u]$, and for $Q^+$ with flavor $\C^\times_u$.  It
+embeds $A[u]$ and $A^+$ in $\mathrm{Frac}(\Pol[u])[\Z^\Omega]$, compatibly with
+the charge.  The weights of $Q^+$ are those of $Q$ together with the weights
+$x_e-x_d+u$ of the added loops, for $d,e$ in the same $\Omega_k$, and the root
+factors $\mathrm{eu}_\lambda$ do not change.  So $r^+_\lambda=g_\lambda r_\lambda$,
+where
+\[
+ g_\lambda=\prod_{k\in Q_0}\ \prod_{d,e\in\Omega_k}(x_e-x_d+u)^{(\lambda_d-\lambda_e)_+}.
+\]
+The factor $g_\lambda$ is $\cW_\lambda$-invariant, so for minuscule $\lambda$
+the elements $\mathsf S^+_\lambda(p)$ of $Q^+$, defined with $r^+_\lambda$ in
+place of $r_\lambda$, are $\mathsf S^+_\lambda(p)=\mathsf S_\lambda(g_\lambda p)$.
+By~\ref{I:gen} these generate $A^+$ over $R[u]$, so $A^+\subseteq A[u]$.
+Conversely, $\sigma_\lambda=\prod_{w\in\cW/\cW_\lambda}w(g_\lambda)$ lies in $R[u]$
+and takes the value $1$ at $x=0$, $u=1$, so $\sigma_\lambda\notin\mathfrak n$.
+The quotient $h_\lambda=\sigma_\lambda/g_\lambda$ is a $\cW_\lambda$-invariant
+polynomial, and as $\sigma_\lambda$ is $\cW$-invariant,
+\[
+ \mathsf S_\lambda(p)=\sigma_\lambda^{-1}\,\mathsf S_\lambda(g_\lambda h_\lambda p)
+ =\sigma_\lambda^{-1}\,\mathsf S^+_\lambda(h_\lambda p).
+\]
+By~\ref{I:gen} the $\mathsf S_\lambda(p)$ generate $A[u]$ over $R[u]$, so
+$A^+_{\mathfrak n}=A[u]_{\mathfrak n}$ inside $\mathrm{Frac}(\Pol[u])[\Z^\Omega]$.
+The B-algebra is the quotient by the ideal generated by the elements of
+nonzero charge, which commutes with localization.  So $B^+_{\mathfrak
+n}=(B_0[u])_{\mathfrak n}$, compatibly with the maps from $R[u]_{\mathfrak n}$,
+whose images are the multiples of $e^0$ in both.  Hence $K^+_{\mathfrak
+n}=K_B[u]_{\mathfrak n}$.
+
+\emph{Conclusion.}  We have shown $K_B[u]_{\mathfrak n}=K_X[u]_{\mathfrak n}$,
+and graded Nakayama gives $K_B=K_X$.
+\begin{details}
+Let $E=(K_B+K_X)/K_B$, a finitely generated graded $R$-module.  Then
+$E\otimes_RR[u]_{\mathfrak n}=0$.  Tensoring further with $R[u]_{\mathfrak
+n}/\mathfrak n=\C$, on which $R$ acts through $R/R_+$, gives $E/R_+E=0$, so
+$E=0$ by graded Nakayama.  So $K_X\subseteq K_B$, and by symmetry $K_B=K_X$.
+\end{details}
+\end{proof}
+
+\begin{theorem}\label{thm:classical}
+Let $\nu$ be generic.  Then $B^\nu_F=B_F$, and the maps
+$\Phi\colon B_F\to H^*_F(X_\nu)$ and
+$\Phi\colon B^\nu(A_{F,\hbar})\to H^*_{F\times\C^\times_\hbar}(X_\nu)$ are
+isomorphisms.  So the maps $R\to B^\nu_F$ and $\kappa\colon R\to H^*_F(X_\nu)$
+are surjective with the same kernel, and Theorem~\ref{thm:main} holds.
+\end{theorem}
+
+\begin{proof}
+By Lemma~\ref{lem:generic}, $B^\nu_F=B_F$ and $B^\nu_0=B_0$, which does not
+depend on $\nu$.  By Proposition~\ref{prop:loopremoval} and
+Lemma~\ref{lem:betti}, $\dim B_0=\dim H^*(X_{\nu_{\det}})=\dim H^*(X_\nu)$.  So
+the surjection $\Phi\colon B^\nu_0\to H^*(X_\nu)$ of \S\ref{sec:map} is an
+isomorphism, and Lemma~\ref{lem:flavor} gives the rest.  For the kernels,
+the map $R\to B^\nu_F$ is onto by
+Lemma~\ref{lem:generic}, and $\Phi[f]=\kappa(f)$, so its kernel is that of
+$\kappa$.
+\end{proof}
+
+\section{The quiver variety side}\label{sec:higgs}
+In the setting of \S\ref{sec:loops}, the filtration of
+Proposition~\ref{prop:filt} and the formula of Theorem~\ref{thm:loops} can
+be described on $X$ alone.  In this section cohomology carries its
+cohomological grading, so the degrees of \S\ref{sec:loops} are doubled: $x_D$
+has degree $2$, and $\langle\delta\rangle$ raises degrees by $2\delta$.  Let $\fc=\prod_{k\in Q_0^+}\A^{v_k}$ be the
+space of tuples of monic polynomials of degrees $v_k$, and let
+\[
+ \chi\colon X\to\fc,\qquad [p]\mapsto\big(\det(t-\ell_k)\big)_k
+\]
+record the characteristic polynomials of the chosen loops.  The function
+$\det(t-\ell_k)$ is $G$-invariant, so $\chi$ is well defined on $X$.  For the
+scaling action on $X$, $\chi$ is equivariant for an action of $\C^\times$ on
+$\fc$ with positive weights, contracting $\fc$ to the point $0=(t^{v_k})_k$.
+\begin{details}
+The scaling action of $a\in\C^\times$ on $T^*N$ multiplies $\ell_k$ by
+$a$, and hence the coefficient of $t^{v_k-i}$ in $\det(t-\ell_k)$ by $a^i$.
+\end{details}
+The map $\chi$ is
+not proper, so we prove the purity of $R\chi_*\Q_X$ by hand.
+
+\emph{Strata.}  For a multipartition $m$, let
+\[
+ \pi_m\colon\A^{P_m}\to\fc,\qquad(c_D)_D\mapsto\Big(\prod_{D:\,k(D)=k}(t-c_D)^{s_D}\Big)_k ,
+\]
+and let $\fc_m$ be the image of the set where the $c_D$ at each vertex are
+pairwise distinct.  So $\fc_m$ is the locus where the roots at each vertex
+have multiplicities given by $m$.
+\begin{itemize}[leftmargin=2em]
+\item The map $\pi_m$ is finite, since the $c_D$ are roots of the image
+polynomials, and it factors through $\A^{P_m}/\cW_m$, where $\cW_m$ permutes
+the $c_D$ for parts of equal size at the same vertex.
+\item On the set where the $c_D$ at each vertex are distinct, $\pi_m$ is a
+Galois cover of $\fc_m$ with group $\cW_m$, the cover by labeled roots.  So
+$\fc_m$ is smooth of dimension $l(m)$, and a $\cW_m$-module $V$ gives a local
+system $\cL(V)$ on $\fc_m$.  For graded $V$ we write $\cL(V)$ and
+$\IC(\overline{\fc_m},\cL(V))$ for the sums over the degrees $i$ of
+$\cL(V^i)[-i]$ and $\IC(\overline{\fc_m},\cL(V^i))[-i]$.
+\item The closure $\overline{\fc_m}=\pi_m(\A^{P_m})$ is the union of the
+$\fc_{m'}$ over the coarsenings $m'$ of $m$, obtained by merging parts at the
+same vertex, as happens when roots collide.  The map
+$\A^{P_m}/\cW_m\to\overline{\fc_m}$ is finite and birational, and its source
+is normal, so it is the normalization.  Only the point $c=0$ of
+$\A^{P_m}/\cW_m$ lies over $0\in\fc$.
+\end{itemize}
+Let $\fc_{\ge L}=\bigcup_{l(m)\ge L}\fc_m$, the locus where the loops have at
+least $L$ distinct eigenvalues in all, counting each vertex separately.  It is
+open.
+
+\emph{Levi subgroups.}  For a Levi subgroup $M\supseteq T$, let
+$\chi_M\colon X(M)\to\fc_M=\prod_\beta\A^{|\beta|}$ record the characteristic
+polynomials of the blocks $\ell_{k,\beta}$ of the chosen loops, the product
+over the blocks $\beta$.  Let $\Delta_M\subseteq X(M)$ be the closed subset
+where each block of each loop has a single eigenvalue.  The group $N_G(M)$
+acts on the gauge theory of $M$, so $N_G(M)/M$ acts on $X(M)$, preserving
+$\Delta_M$.  The \emph{cuspidal part} of $H^*(X(M))$ is the
+$N_G(M)/M$-module
+\[
+ V_M=\ker\big(H^*(X(M))\to H^*(X(M)\setminus\Delta_M)\big).
+\]
+By Theorem~\ref{thm:higgs}(3) below, $\Phi_M$ identifies it with the cuspidal
+part of $B(M)$ in the sense of Corollary~\ref{cor:cusp}.
+As in Corollary~\ref{cor:cusp}, $\mathcal M_L$ is the set of Levi subgroups
+$M\supseteq T$ with at least $L$ blocks.
+
+\begin{theorem}\label{thm:higgs}
+\begin{enumerate}[leftmargin=2em]
+\item $R\chi_*\Q_X$ is pure of weight $0$, and
+\[
+ R\chi_*\Q_X\cong\bigoplus_m\IC\big(\overline{\fc_m},\cL(V_{M_m})\big)[-l(m)].
+\]
+\item $H^*(X)\cong\bigoplus_mV_{M_m}^{\cW_m}$.  For every $L$, the kernel
+of restriction $H^*(X)\to H^*(\chi^{-1}\fc_{\ge L})$ is
+$\bigcap_{M\in\mathcal M_L}\ker\iota_M^*=\Phi(F_{L-1})$.
+\item $V_{M_m}=\Phi_{M_m}\big(F_{l(m)}(M_m)\big)\cong(\Pol_m/J_m)\langle\delta_m\rangle$, as
+graded $\cW_m$-modules, where $F_\bullet(M_m)$ is the filtration of
+Proposition~\ref{prop:filt} for $Q_{M_m}$.
+\end{enumerate}
+\end{theorem}
+
+So the formula of Theorem~\ref{thm:loops} is the decomposition theorem for
+$\chi$, read at the cone point.  The summand of $m$ lives on the closure of
+the stratum where the eigenvalues of the loops have multiplicities $m$; this
+records the centralizers of the semisimple parts of the loops, not their
+Jordan types.  Its multiplicity space is the cohomology of the hypertoric variety of
+$\Zm$ acting on $N'^{\xi_m}$, shifted by $\delta_m$, with its
+$\cW_m$-monodromy, and the stalk at $0$ keeps the invariants.
+
+We prove Theorem~\ref{thm:higgs} after two lemmas.  Write $K=R\chi_*\Q_X$ and
+$K_M=R\chi_{M*}\Q_{X(M)}$, and use the conventions of~\ref{I:sheaves}.
+
+\begin{lemma}[local model]\label{lem:localmodel}
+Let $\fc^\circ_M\subseteq\fc_M$ be the open set where the block polynomials at
+each vertex are pairwise coprime, and $\pi_M\colon\fc^\circ_M\to\fc$ the map
+multiplying them.  Then $\pi_M$ is \'etale, $X(M)^\circ=\chi_M^{-1}(\fc^\circ_M)$,
+and $(\iota_M,\chi_M)\colon X(M)^\circ\to X\times_\fc\fc^\circ_M$ is an
+isomorphism.  Hence $\pi_M^*K\cong K_M|_{\fc^\circ_M}$.
+\end{lemma}
+
+\begin{proof}
+The Jacobian determinant of $(f,g)\mapsto fg$ on pairs of monic polynomials
+is, up to sign, the resultant of $f$ and $g$, so $\pi_M$ is \'etale.  The
+block polynomials are coprime exactly when the block spectra are disjoint,
+so $X(M)^\circ=\chi_M^{-1}(\fc^\circ_M)$.
+
+The inverse of $(\iota_M,\chi_M)$ conjugates a point into block form along
+the decomposition of each $V_k$ by the factors of $\det(t-\ell_k)$; the
+off-block-diagonal part of $\ell^*$ is then the correction term of
+Lemma~\ref{lem:ind}.
+\begin{details}
+Let $p=(\ell,\ell^*,n)$ be a
+stable point of $\mu^{-1}(0)$, and let $\det(t-\ell_k)=\prod_\beta f_\beta$ be
+a factorization into pairwise coprime monic polynomials, indexed by the
+blocks $\beta$ at $k$, with $\deg f_\beta=|\beta|$.  By the Chinese remainder
+theorem and Cayley--Hamilton, $V_k=\bigoplus_\beta\ker f_\beta(\ell_k)$, and
+$\ell_k$ has characteristic polynomial $f_\beta$ on $\ker f_\beta(\ell_k)$, so
+this summand has dimension $|\beta|$.  Choose $g\in G$ mapping each
+$\ker f_\beta(\ell_k)$ onto the block $V^{(\beta)}$; it is unique up to left
+multiplication by $M$.  Then $g\ell g^{-1}$ is block diagonal, with
+disjoint block spectra.  Write $g\ell^*g^{-1}=\ell_M^*+\gamma$ with
+$\ell_M^*\in\mathfrak m$ and $\gamma\in\mathfrak m^\perp$.  The
+off-block-diagonal part of $\mu(gp)=0$ says $[g\ell g^{-1},\gamma]+\mathrm
+pr_{\mathfrak m^\perp}\mu'(gn)=0$, so $\gamma$ is the correction term of
+Lemma~\ref{lem:ind} and $gp=\tilde\iota(g\ell g^{-1},\ell_M^*,gn)$.  Its
+block-diagonal part says that $(g\ell g^{-1},\ell_M^*,gn)$ lies in
+$\mu_M^{-1}(0)$, and this point is stable by the stability comparison in the
+proof of Lemma~\ref{lem:ind}.  Sending $([p],(f_\beta))$ to its class in
+$X(M)^\circ$ is well defined, since $g$ is unique up to $M$, and it is
+algebraic, since the projections onto the $\ker f_\beta(\ell_k)$ are
+polynomials in $\ell_k$ with coefficients regular on $\fc_M^\circ$.  It is
+inverse to $(\iota_M,\chi_M)$.
+\end{details}
+The last claim is base change along the \'etale map $\pi_M$.
+\end{proof}
+
+\begin{lemma}[stalks]\label{lem:stalks}
+Let $M=M_m$ and $c\in\fc_m$.  Choose labeled roots $(c_D)$ of $c$, and let
+$\tilde c\in\fc^\circ_M$ have block polynomials $(t-c_D)^{s_D}$, so that
+$\pi_M(\tilde c)=c$.
+\begin{enumerate}[leftmargin=2em]
+\item There is an isomorphism $K_c\cong H^*(X(M))$ of mixed Hodge structures,
+and $K_c$ is pure: $H^i(K_c)$ has weight $i$.
+\item For $b\in H^*(X)$, the image of $b$ in the stalk $K_c$ vanishes if and
+only if $\iota_M^*b=0$.
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+Let $\mathfrak s_M\subseteq\fc_M$ be the slice where the roots of each block
+polynomial sum to zero (not to be confused with the open set $\fc^\circ_M$), $X(M)_{\mathfrak s}=\chi_M^{-1}(\mathfrak s_M)$, and
+$K^{\mathfrak s}_M=R\chi_{M*}\Q_{X(M)_{\mathfrak s}}$.  Translating each block of $\ell_M$ by a scalar
+gives isomorphisms $X(M)\cong\mathfrak z(\mathfrak m)\times X(M)_{\mathfrak s}$ and
+$\fc_M\cong\mathfrak z(\mathfrak m)\times\mathfrak s_M$ compatible with $\chi_M$, so
+$K_M\cong\Q\boxtimes K^{\mathfrak s}_M$.  In these coordinates $\tilde c=((c_D),0)$.  The
+complex $K^{\mathfrak s}_M$ is constructible for a stratification by
+$\C^\times$-stable strata, as $\chi_M$ is $\C^\times$-equivariant, so by~\ref{I:sheaves}(d) restriction
+$H^*(X(M)_{\mathfrak s})=R\Gamma(\mathfrak s_M,K^{\mathfrak s}_M)\to(K^{\mathfrak s}_M)_0$ is an isomorphism.  Since
+$\pi_M$ is \'etale, Lemma~\ref{lem:localmodel} gives
+\[
+ K_c\cong(K_M)_{\tilde c}\cong(K^{\mathfrak s}_M)_0\cong H^*(X(M)_{\mathfrak s})\cong H^*(X(M)).
+\]
+These are isomorphisms of mixed Hodge structures, and $H^*(X(M))$ is pure
+by~\ref{I:sheaves}(a), since $X(M)$ is smooth and retracts onto its proper
+core~\ref{I:core}(a).  This proves~(1).
+
+For~(2), let $U\ni c$ be a small neighborhood over which $\pi_M$ has a section
+through $\tilde c$, with image $\tilde U$.  The image of $b$ in $K_c$ is its
+restriction to $\chi^{-1}(U)$, which by Lemma~\ref{lem:localmodel} is
+$\chi_M^{-1}(\tilde U)\subseteq X(M)^\circ$, embedded by $\iota_M$.  So it is
+the restriction of $\iota_M^*b$ to $\chi_M^{-1}(\tilde U)$.  By
+Lemma~\ref{lem:ind}(3) and the surjectivity of $\Phi$, $\iota_M^*b$ lies in
+$H^*(X(M))$, and restriction from $H^*(X(M))$ to $\chi_M^{-1}(\tilde U)$ is the
+isomorphism of~(1).
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:higgs}]
+\emph{Purity.}  The complex $\Q_X$ is pure of weight $0$, so $K$ has weights
+$\ge0$ by~\ref{I:sheaves}(a).  By Lemma~\ref{lem:stalks}(1), every stalk
+$H^i(K_c)$ has weight $i$, so $K$ has weights $\le0$.  So $K$ is pure,
+and by~\ref{I:sheaves}(b) it is a direct sum of shifted simple perverse
+sheaves.
+
+\emph{Supports.}  Near a point $c\in\fc_m$, Lemma~\ref{lem:localmodel} and
+the proof of Lemma~\ref{lem:stalks} identify $K$, \'etale locally, with
+$\Q\boxtimes K^{\mathfrak s}_M$ near $((c_D),0)$, for $M=M_m$.  The stratum $\fc_m$
+corresponds to $\mathfrak z(\mathfrak m)\times\{0\}$, since near $\tilde c$
+the block polynomials stay coprime and each has a single root exactly over
+$\fc_m$.  So the cohomology sheaves of $K$ are locally constant on $\fc_m$.
+They become constant on the cover by labeled roots, so the monodromy factors
+through $\cW_m$.
+\begin{details}
+That cover maps
+to $\fc^\circ_M$ by $(c_D)\mapsto((t-c_D)^{s_D})_D$, which in the coordinates
+$\mathfrak z(\mathfrak m)\times\mathfrak s_M$ is $(c_D)\mapsto((c_D),0)$; by
+Lemma~\ref{lem:localmodel}, which holds over all of $\fc^\circ_M$, and by
+$K_M\cong\Q\boxtimes K^{\mathfrak s}_M$, the pullback of $K$ along it is
+constant with fiber $(K^{\mathfrak s}_M)_0$.
+\end{details}
+Hence each simple summand of $K$ is
+$\IC(\overline{\fc_m},\cL)$ for some $m$ and some local system $\cL$ on $\fc_m$
+with monodromy through $\cW_m$.  By the same argument, $K^{\mathfrak s}_M$ is pure and
+is a direct sum of shifted $\IC$ sheaves with $\C^\times$-stable supports.  In
+the chart, a summand of $K$ supported on $\overline{\fc_m}$
+becomes $\Q$ boxed with a summand of $K^{\mathfrak s}_M$ supported at $0$, and the other
+summands of $K$ through $c$ become $\Q$ boxed with summands of $K^{\mathfrak s}_M$ whose
+support has positive dimension.
+
+\emph{Multiplicities.}  Write $K^{\mathfrak s}_M=K_{\rm cusp}\oplus K'$, with $K_{\rm cusp}$ supported at $0$
+and $K'$ a sum of shifted $\IC$ sheaves whose supports are
+$\C^\times$-stable of positive dimension, hence contain $0$.  Restriction
+from $\mathfrak s_M$ to $\mathfrak s_M\setminus0$ kills the global sections of $K_{\rm cusp}$.  It is
+injective on those of $K'$, by~\ref{I:sheaves}(c) and~(d).
+\begin{details}
+Let $j$ be the inclusion of
+$\mathfrak s_M\setminus0$ and take global sections of the triangle
+$i_{0*}i_0^!\to\mathrm{id}\to j_*j^*$ applied to a summand of $K'$.  The
+global sections of the summand are its stalk $i_0^*$ at $0$,
+by~\ref{I:sheaves}(d), and the map from $i_0^!$ to them is the natural map
+$i_0^!\to i_0^*$, which is zero by~\ref{I:sheaves}(c).  So restriction to
+$\mathfrak s_M\setminus0$ is injective on that summand.
+\end{details}
+So the global sections of $K_{\rm cusp}$ are
+the kernel of
+\[
+ H^*(X(M)_{\mathfrak s})\to H^*\big(X(M)_{\mathfrak s}\setminus\chi_M^{-1}(0)\big),
+\]
+which under $X(M)\cong\mathfrak z(\mathfrak m)\times X(M)_{\mathfrak s}$ is the kernel
+$V_M$ of restriction to $X(M)\setminus\Delta_M$.  The deck transformations of
+the cover by labeled roots are induced by $N_G(M)/M=\cW_m$, which permutes the
+blocks, so the summand of $K$ supported on $\overline{\fc_m}$ is
+$\IC(\overline{\fc_m},\cL(V_M))[-l(m)]$.  The shift $[-l(m)]$ comes from the
+normalization of perverse sheaves: on $\fc_m$ this summand is $\cL(V_M)$ in the
+degrees of $V_M$.  This proves~(1).
+
+\emph{Global sections.}  The summands of $K$ are constructible for the
+$\C^\times$-stable strata $\fc_m$, so by~\ref{I:sheaves}(d) their global
+sections are their stalks at $0$.  The normalization
+$\A^{P_m}/\cW_m\to\overline{\fc_m}$ is finite and an isomorphism over $\fc_m$, so
+$\IC(\overline{\fc_m},\cL)$ is the pushforward of $\IC(\A^{P_m}/\cW_m,\cL)$, and only
+$0$ lies over $0$.  So by~\ref{I:sheaves}(e), the stalk of $\IC(\overline{\fc_m},\cL(V))[-l(m)]$ at
+$0$ is $V^{\cW_m}$, and it maps injectively to the stalk at every point of
+$\fc_m$.  So $H^*(X)=R\Gamma(\fc,K)\cong\bigoplus_mV_{M_m}^{\cW_m}$, which is the
+first claim of~(2).
+
+Write $b\in H^*(X)$ as $\sum_mb_m$, with $b_m$ in the global sections of the
+summand of $m$.  A summand of $m''$ has nonzero stalk at $c\in\fc_m$ only if
+$m$ is a coarsening of $m''$.  So, by descending induction on $l(m)$, the
+kernel of restriction to $\chi^{-1}\fc_{\ge L}$ is the sum of the summands
+with $l(m)<L$, and it is also the set of $b$ whose stalks vanish at every
+point of $\fc_{\ge L}$.
+\begin{details}
+The summands with $l(m)<L$ are supported on
+$\overline{\fc_m}$, which consists of strata $\fc_{m'}$ with $l(m')\le l(m)$
+and so does not meet $\fc_{\ge L}$; they restrict to zero on
+$\chi^{-1}\fc_{\ge L}$.  Suppose $b$ restricts to zero there.  We show
+$b_m=0$ for $l(m)\ge L$, by descending induction on $l(m)$.  Let $c\in\fc_m$.
+A summand of $m''$ has nonzero stalk at $c$ only if $c\in\overline{\fc_{m''}}$,
+that is, if $m$ is a coarsening of $m''$.  Then $l(m'')\ge l(m)$, with equality
+only for $m''=m$.  By induction $b_{m''}=0$ when $l(m'')>l(m)$, so the stalk of
+$b$ at $c$ is that of $b_m$.  It vanishes, so $b_m=0$ by the injectivity
+above.  Hence the kernel of restriction to $\chi^{-1}\fc_{\ge L}$ is the sum
+of the summands with $l(m)<L$, and it is also the set of $b$ whose stalks
+vanish at every point of $\fc_{\ge L}$.
+\end{details}
+By Lemma~\ref{lem:stalks}(2), the
+stalks of $b$ over $\fc_{m'}$ vanish if and only if $\iota_{M_{m'}}^*b=0$.
+Every $M\in\mathcal M_L$ is conjugate to some $M_{m'}$ with $l(m')\ge L$, so
+this kernel is $\bigcap_{M\in\mathcal M_L}\ker\iota_M^*$.  Finally, by
+Lemma~\ref{lem:ind}(3), $\iota_M^*\circ\Phi=\Phi_M\circ\res_M$, and $\Phi_M$ is
+injective by Theorem~\ref{thm:loops} for $Q_M$.  So
+$\bigcap_{M\in\mathcal M_L}\ker\iota_M^*=\Phi\big(\bigcap_{M\in\mathcal
+M_L}\ker\res_M\big)=\Phi(F_{L-1})$ by Corollary~\ref{cor:cusp}.  This
+proves~(2).
+
+\emph{Cuspidal parts.}  Apply~(2) to $X(M)$ for $M=M_m$, with $l(m)+1$ in
+place of $L$.  The vertices of $Q_M$ are the $l(m)$ blocks, so the loops of
+$Q_M$ have at least $l(m)+1$ distinct eigenvalues in all exactly off
+$\Delta_M$.  So $V_M=\Phi_M(F_{l(m)}(M))$.  By Corollary~\ref{cor:cusp} for
+$Q_M$, whose gauge group is $M$, with $l(m)$ blocks, $F_{l(m)}(M)$ is the
+cuspidal part $(\Pol_m/J_m)\langle\delta_m\rangle$ of $B(M)$.  The group $N_G(M)/M=\cW_m$ permutes the blocks of
+equal size at each vertex, so it acts on the gauge theory of $Q_M$, hence on
+$B(M)$, $H^*(X(M))$ and $\Pol_m$, and $\Phi_M$ and $\epsilon$ commute with these
+actions.  So the identification is $\cW_m$-equivariant.  This proves~(3).
+\end{proof}
+
+\begin{remark}
+For the Jordan quiver with $\bw=1$, $\chi$ is the composite
+$\Hilb^n(\C^2)\to\mathrm{Sym}^n\C^2\to\mathrm{Sym}^n\C$, every $V_{M_m}$ is
+one-dimensional, and Theorem~\ref{thm:higgs}(1) is the push-forward of the
+decomposition of G\"ottsche and Soergel for the Hilbert--Chow map.
+\end{remark}
+
+\begin{remark}
+Decompositions over multiplicity strata also appear for the BPS sheaves of
+preprojective algebras, which for the Jordan quiver are supported on small
+diagonals \cite[Thm.~5.1, Cor.~5.3]{davisonIntegralityConjecture2023}.  For any quiver,
+\cite[Thm.~1.14]{davisonBPSAlgebras2023} decomposes the cohomology of
+Nakajima quiver varieties over the BPS Lie algebra; that decomposition is along
+$X\to\mu^{-1}(0)/\!/G$ rather than along $\chi$.  We have not compared these
+with Theorem~\ref{thm:higgs}.
+\end{remark}
+
+\section{Status}\label{sec:status}
+\begin{enumerate}[leftmargin=2em]
+\item Theorem~\ref{thm:map} is announced in \cite[Thm.~E]{bottaQuasimapCritical2026}; we do
+not give a proof.
+\item We have not checked the following citations against the sources:
+\begin{itemize}[leftmargin=1.5em]
+\item the form of \cite[Prop.~3.22]{BFN} used in~\ref{I:base}, with
+flavor and loop rotation;
+\item \cite{hauselCohomologyLarge2013} and \cite{greeneInterpretationWhitney1983};
+\item \cite[Prop.~3.18]{bellamySymplecticResolutions2021} in~\ref{I:rot};
+\item the theorem numbers in the paragraph on known cases (\S\ref{ss:setup}) and
+in the remarks after Theorem~\ref{thm:higgs}, which were taken from the arXiv
+versions;
+\item the smoothness statement in~\ref{I:hypertoric}(a), for which we give
+no theorem number;
+\item the degree of $r_\lambda$ in the grading of \cite{BFN}
+(\S\ref{ss:abel});
+\item the form with flavor of \cite[Thm.~4.1, Lemma~5.17,
+Prop.~6.6]{BFN}, used before Proposition~\ref{prop:loopremoval}; these
+were checked without flavor against arXiv:1601.03586v8;
+\item \cite[\S2.6]{CG97} for the top homology of a compact variety
+in~\ref{I:core}(d);
+\item \cite[Prop.~3.7.5]{kashiwaraSheavesManifolds1994};
+\item the numbering in \cite{BBD};
+\item that \cite[Thm.~4.1(2)]{nakajimaInstantonsALE1994}, whose proof there
+refers to Kronheimer, holds for quivers with loops (remark after
+Lemma~\ref{lem:betti}).
+\end{itemize}
+\item A proof on the quiver variety side that the cuspidal part $V_G$ is
+$(\Pol_G/J_G)\langle\delta_{m_G}\rangle$ would give the formula of
+Theorem~\ref{thm:loops} with no input from the Coulomb branch.  Hausel's
+formula and Remark~\ref{rem:kirwan}(4) already give that formula with no such
+input (Remark~\ref{rem:hausel}), and Theorem~\ref{thm:higgs}(2) gives
+$H^*(X)\cong\bigoplus_mV_{M_m}^{\cW_m}$ without using $\Phi$; what is missing is
+the comparison summand by summand.
+\end{enumerate}
+
+% \markboth is neutralized so biblatex does not overwrite the running head.
+{\renewcommand{\markboth}[2]{}\printbibliography}
+
+\end{document}

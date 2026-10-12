@@ -1,0 +1,324 @@
+%%% preamble.tex -- shared preamble for Ben Webster's papers.
+%%%
+%%% Loaded from the driver with \input{preamble} immediately after
+%%% \documentclass.  Project-specific macros belong in main.tex (or their own
+%%% file), not here: this file is meant to be copied unchanged between papers.
+%%%
+%%%   1. Packages
+%%%   2. Bibliography (biblatex + biber)
+%%%   3. Cross-references (zref-clever + aliascnt)
+%%%   4. Theorem environments
+%%%   5. Equation numbering
+%%%   6. Index of notation (anindex)
+%%%   7. Standard macros
+%%%   8. Editorial macros
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% 1. Packages
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% These two must be set before bm loads; without them bm + stmaryrd together
+% exhaust the 16 available math families.
+\newcommand{\hmmax}{0}
+\newcommand{\bmmax}{0}
+
+\usepackage[english]{babel}
+\usepackage{csquotes}
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+\usepackage{amsmath,amsfonts,amssymb,mathtools}
+\usepackage{mathrsfs}                 % \mathscr
+\usepackage{bm,stmaryrd,nicefrac}
+\usepackage{xcolor,graphicx,xspace}
+\usepackage{xparse,enumitem}
+\usepackage{tikz,tikz-cd}
+\usepackage{quiver}                   % local: quiver.sty
+\usepackage{tabularx}
+
+% Uncomment while drafting to print label names in the margin.
+% \usepackage[notref,notcite]{showkeys}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% 2. Bibliography
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage[maxbibnames=99,backend=biber,url=false,style=alphabetic,doi=true,eprint=false]{biblatex}
+\renewbibmacro*{url+urldate}{%
+  % nothing here
+}
+\renewbibmacro{in:}{}
+\AtEveryBibitem{
+  \clearfield{isbn}
+  \clearlist{location}
+  \clearfield{month}
+  \clearfield{day}
+  \clearfield{series}
+  \clearfield{pages}
+  \clearlist{language}
+  \clearlist{translator}
+  \clearfield{urldate}
+  \clearfield{urlyear}
+  \clearfield{urlmonth}
+  \clearfield{pubstate}
+  \clearfield{url}
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% 3. Cross-references
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% hyperref should be loaded late, but before zref-clever.
+\usepackage[colorlinks=true,allcolors=blue]{hyperref}
+\usepackage{zref-clever}
+\usepackage{aliascnt}
+\zcsetup{cap}
+
+% cleveref-style spellings, so that sources written against \cref still work.
+\providecommand{\cref}[1]{\zcref{#1}}
+\providecommand{\Cref}[1]{\zcref{#1}}
+\providecommand{\crefrange}[2]{\zcref{#1,#2}}
+\providecommand{\Crefrange}[2]{\zcref{#1,#2}}
+\providecommand{\labelcref}[1]{\zcref{#1}}
+
+% Equations are referred to by number alone: (3.2), not "equation (3.2)".
+\zcRefTypeSetup{equation}{
+  name-sg=,
+  Name-sg=,
+  name-pl=,
+  Name-pl=
+}
+
+% \NewTheoremWithZref{env}[shared counter]{Name}{Plural}
+%
+% With plain \newtheorem, every environment sharing the `theorem' counter gets
+% referred to as "Theorem".  \aliascnt gives each one its own counter name so
+% zref-clever can print "Lemma 3.2", "Definition 3.3", and so on.
+\NewDocumentCommand{\NewTheoremWithZref}{ m o m m }{%
+  \IfNoValueTF{#2}{%
+    \newtheorem{#1}{#3}%
+    \zcRefTypeSetup{#1}{%
+      name-sg=#3, Name-sg=#3, name-pl=#4, Name-pl=#4%
+    }%
+  }{%
+    \newaliascnt{#1}{#2}%
+    \newtheorem{#1}[#1]{#3}%
+    \aliascntresetthe{#1}%
+    \zcRefTypeSetup{#1}{%
+      name-sg=#3, Name-sg=#3, name-pl=#4, Name-pl=#4%
+    }%
+  }%
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% 4. Theorem environments
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Results stated in the introduction: Theorem A, Corollary B, ...
+\newtheorem{itheorem}{Theorem}
+\renewcommand{\theitheorem}{\Alph{itheorem}}
+\zcRefTypeSetup{itheorem}{
+  name-sg=theorem, Name-sg=Theorem, name-pl=theorems, Name-pl=Theorems
+}
+\NewTheoremWithZref{icorollary}[itheorem]{Corollary}{Corollaries}
+\NewTheoremWithZref{iproposition}[itheorem]{Proposition}{Propositions}
+
+% Everything in the body shares one counter, numbered by section.
+\newtheorem{theorem}{Theorem}[section]
+\NewTheoremWithZref{proposition}[theorem]{Proposition}{Propositions}
+\NewTheoremWithZref{corollary}[theorem]{Corollary}{Corollaries}
+\NewTheoremWithZref{lemma}[theorem]{Lemma}{Lemmas}
+\NewTheoremWithZref{assumption}[theorem]{Assumption}{Assumptions}
+\NewTheoremWithZref{definition}[theorem]{Definition}{Definitions}
+\NewTheoremWithZref{ques}[theorem]{Question}{Questions}
+\NewTheoremWithZref{conjecture}[theorem]{Conjecture}{Conjectures}
+\NewTheoremWithZref{algorithm}[theorem]{Algorithm}{Algorithms}
+
+\theoremstyle{remark}
+\NewTheoremWithZref{remark}[theorem]{Remark}{Remarks}
+\NewTheoremWithZref{warning}[theorem]{Warning}{Warnings}
+
+% Examples get their own per-section counter with roman numerals, and close
+% with a club suit rather than a tombstone.
+\NewTheoremWithZref{examplex}{Example}{Examples}
+\makeatletter
+\@addtoreset{examplex}{section}
+\makeatother
+\renewcommand{\theexamplex}{\arabic{section}.\roman{examplex}}
+\newenvironment{example}
+  {\pushQED{\qed}\renewcommand{\qedsymbol}{$\clubsuit$}\examplex}
+  {\popQED\endexamplex}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% 5. Equation numbering
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\numberwithin{equation}{section}
+\renewcommand{\theequation}{\arabic{section}.\arabic{equation}}
+
+% \newseq steps the equation counter once; each \subeqn inside the following
+% *unnumbered* displays (\[...\], align*, gather*) then tags a line 3.4a, 3.4b,
+% ....  Do not use \subeqn inside a numbered `equation', which would step the
+% equation counter again and restart the letters.
+\newcounter{subeqn}
+\renewcommand{\thesubeqn}{\theequation\alph{subeqn}}
+\makeatletter
+% Freeze the number at the moment the counter steps.  amsart and friends are
+% leqno classes, and there multline builds its tag box after amsmath has rolled
+% back the counters from its measuring pass, so a bare \tag{\thesubeqn} prints
+% one letter too low and leaves the hyperref destination out of step with it.
+\newcommand{\subeqn}{\refstepcounter{subeqn}%
+  \protected@edef\subeqn@tag{\thesubeqn}%
+  \expandafter\tag\expandafter{\subeqn@tag}}
+\@addtoreset{subeqn}{equation}
+\makeatother
+\newcommand{\newseq}{\refstepcounter{equation}}
+
+\setcounter{tocdepth}{1}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% 6. Index of notation
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Set \anindexfalse to drop the index without touching the \notation calls
+% scattered through the text (useful for journal submissions).
+\newif\ifanindex
+\anindextrue
+\ifanindex
+  \usepackage{anindex}                % local: anindex.sty
+  \anindexsetup{
+    heading,
+    lines,
+    title = {Index of Notation}
+  }
+\else
+  % Same signature as anindex's \notation, so entries can stay in the source.
+  \NewDocumentCommand{\notation}{ m m o }{}
+  \NewDocumentCommand{\IndexOfNotation}{ }{}
+\fi
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% 7. Standard macros
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\nc}{\newcommand}
+\newcommand{\renc}{\renewcommand}
+
+%%% Math alphabet families -------------------------------------------------
+%
+%   \cA ... \cZ   \mathcal        \fA ... \fZ, \fa ... \fz   \mathfrak
+%   \sA ... \sZ   \mathscr        \BA ... \BZ, \Ba ... \Bz   \mathbf
+%
+% Generated in a loop rather than listed one per line.  Existing commands are
+% never overwritten, so \renc is the way to repurpose one of these in a paper.
+% Note \fi is a TeX primitive and is therefore skipped: write \mathfrak{i}.
+\makeatletter
+\newcommand{\bw@letterfamily}[3]{%
+  \@tfor\bw@ltr:=#3\do{%
+    \@ifundefined{#1\bw@ltr}{%
+      \expandafter\edef\csname #1\bw@ltr\endcsname{\noexpand#2{\bw@ltr}}%
+    }{}%
+  }%
+}
+\bw@letterfamily{c}{\mathcal} {ABCDEFGHIJKLMNOPQRSTUVWXYZ}
+\bw@letterfamily{s}{\mathscr} {ABCDEFGHIJKLMNOPQRSTUVWXYZ}
+\bw@letterfamily{f}{\mathfrak}{ABCDEFGHIJKLMNOPQRSTUVWXYZ}
+\bw@letterfamily{f}{\mathfrak}{abcdefghjklmnopqrstuvwxyz}
+\bw@letterfamily{B}{\mathbf}  {ABCDEFGHIJKLMNOPQRSTUVWXYZ}
+\bw@letterfamily{B}{\mathbf}  {abcdefghijklmnopqrstuvwxyz}
+\makeatother
+
+%%% Number systems ---------------------------------------------------------
+\nc{\C}{\mathbb{C}}
+\nc{\R}{\mathbb{R}}
+\nc{\Z}{\mathbb{Z}}
+\nc{\N}{\mathbb{N}}
+\nc{\Q}{\mathbb{Q}}
+\nc{\kk}{\Bbbk}                       % the base field
+
+%%% Lie algebras -----------------------------------------------------------
+\nc{\g}{\mathfrak{g}}
+\nc{\h}{\mathfrak{h}}
+\nc{\gl}{\mathfrak{gl}}
+\nc{\fsl}{\mathfrak{sl}}
+\nc{\fso}{\mathfrak{so}}
+\nc{\fsp}{\mathfrak{sp}}
+\nc{\pgl}{\mathfrak{pgl}}
+
+%%% Greek shorthand --------------------------------------------------------
+\nc{\al}{\alpha}      \nc{\be}{\beta}       \nc{\ga}{\gamma}
+\nc{\de}{\delta}      \nc{\ep}{\epsilon}    \nc{\eps}{\varepsilon}
+\nc{\la}{\lambda}     \nc{\si}{\sigma}      \nc{\om}{\omega}
+\nc{\vp}{\varphi}     \nc{\La}{\Lambda}     \nc{\Th}{\Theta}
+
+%%% Operators --------------------------------------------------------------
+\DeclareMathOperator{\Hom}{Hom}
+\DeclareMathOperator{\End}{End}
+\DeclareMathOperator{\Ext}{Ext}
+\DeclareMathOperator{\Tor}{Tor}
+\DeclareMathOperator{\RHom}{RHom}
+\DeclareMathOperator{\HOM}{HOM}
+\DeclareMathOperator{\Aut}{Aut}
+\DeclareMathOperator{\Fun}{Fun}
+\DeclareMathOperator{\Sym}{Sym}
+\DeclareMathOperator{\Spec}{Spec}
+\DeclareMathOperator{\MaxSpec}{MaxSpec}
+\DeclareMathOperator{\Proj}{Proj}
+\DeclareMathOperator{\Frac}{Frac}
+\DeclareMathOperator{\Coh}{Coh}
+\DeclareMathOperator{\GL}{GL}
+\DeclareMathOperator{\Mat}{Mat}
+\DeclareMathOperator{\Kar}{Kar}
+\DeclareMathOperator{\Add}{Add}
+\DeclareMathOperator{\Ind}{Ind}
+\DeclareMathOperator{\Res}{Res}
+\DeclareMathOperator{\Tr}{Tr}
+\DeclareMathOperator{\Id}{Id}
+\DeclareMathOperator{\Ad}{Ad}
+\DeclareMathOperator{\ad}{ad}
+\DeclareMathOperator{\ch}{ch}
+\DeclareMathOperator{\coker}{coker}
+\DeclareMathOperator{\cosoc}{cosoc}
+\DeclareMathOperator{\diag}{diag}
+\DeclareMathOperator{\ev}{ev}
+\DeclareMathOperator{\gr}{gr}
+\DeclareMathOperator{\id}{id}
+\DeclareMathOperator{\im}{im}
+\DeclareMathOperator{\ind}{ind}
+\DeclareMathOperator{\op}{op}
+\DeclareMathOperator{\pr}{pr}
+\DeclareMathOperator{\rad}{rad}
+\DeclareMathOperator{\res}{res}
+\DeclareMathOperator{\rev}{rev}
+\DeclareMathOperator{\sgn}{sgn}
+\DeclareMathOperator{\soc}{soc}
+\DeclareMathOperator{\supp}{supp}
+\DeclareMathOperator{\tr}{tr}
+\DeclareMathOperator{\wt}{wt}
+\nc{\mmod}{\operatorname{-mod}}       % as in $A\mmod$
+
+%%% Assorted ---------------------------------------------------------------
+\nc{\qbinom}[2]{\genfrac{[}{]}{0pt}{}{#1}{#2}}
+\nc{\doubletilde}[1]{\tilde{\tilde{#1}}}
+\nc{\arxiv}[1]{\href{http://arxiv.org/abs/#1}{\texttt{arXiv:\nolinkurl{#1}}}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% 8. Editorial macros
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Margin/inline notes between coauthors.  Add one \nc per author, and switch
+% \bwnotestrue to \bwnotesfalse to silence them all before circulating a draft.
+\newif\ifbwnotes
+\bwnotestrue
+\ifbwnotes
+  \nc{\Ben}[1]{{\color{red}[Ben: #1]}}
+\else
+  \nc{\Ben}[1]{}
+\fi

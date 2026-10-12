@@ -1,0 +1,221 @@
+%% ----------------------------------------------------------------
+%% anindex --- A latex package for creating a notational index
+%%
+%% E-mail: andrew.mathas@gmail.com
+%% Released under the LaTeX Project Public License v1.3c or later
+%% See http://www.latex-project.org/lppl.txt
+%% ----------------------------------------------------------------
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesExplPackage{anindex}{2022-08-18}{0.1.0}
+  {A latex package for creating a notational index}
+
+\RequirePackage{booktabs}
+\RequirePackage{xltabular}
+\RequirePackage{xparse}
+
+% Throughout, "ani" should be read as "A Notational Index"
+\def\anindex@version{0.1.0}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Package options and their defaults
+
+\tl_new:N   \g__ani_blurb_tl
+\tl_new:N   \g__ani_description_tl
+\tl_new:N   \g__ani_page_tl
+\tl_new:N   \g__ani_sec_tl
+\tl_new:N   \g__ani_symbol_level_tl
+\tl_new:N   \g__ani_symbol_tl
+\tl_new:N   \g__ani_title_tl
+
+\bool_new:N \g__ani_heading_bool     % false by default
+\bool_new:N \g__ani_headerlines_bool % false by default
+\bool_new:N \g__ani_midlines_bool    % false by default
+
+% define keys
+\keys_define:nn { anindex }
+{
+    % variables
+    blurb        .tl_gset:N = \g__ani_blurb_tl,
+    description  .tl_gset:N = \g__ani_description_tl,
+    level        .tl_gset:N = \g__ani_symbol_level_tl,
+    symbol       .tl_gset:N = \g__ani_symbol_tl,
+    sec          .tl_gset:N = \g__ani_sec_tl,
+    page         .tl_gset:N = \g__ani_page_tl,
+    title        .tl_gset:N = \g__ani_title_tl,
+    % switches
+    heading      .code:n    = \bool_set_true:N \g__ani_heading_bool,
+    header~lines .code:n    = \bool_set_true:N \g__ani_headerlines_bool,
+    midlines     .code:n    = \bool_set_true:N \g__ani_midlines_bool,
+    lines        .code:n    = {
+        \bool_set_true:N \g__ani_headerlines_bool
+        \bool_set_true:N \g__ani_midlines_bool
+    },
+}
+% set default values
+\keys_set:nn { anindex }
+{
+    blurb        = {This~index~of~notation~gives~a~brief~description~of~the~main~notation~used~in~the~paper,~together~with~the~section~and~page~where~the~notation~is~defined.},
+    description  = Description,
+    level        = subsection,
+    page         = Page,
+    sec          = \exp_not:n{\S},
+    symbol       = Symbol,
+    title        = Index~of~notation
+}
+
+% user settings
+\NewDocumentCommand\anindexsetup{ m }{ \keys_set:nn { anindex } {#1} }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% just in case we're running an old version of latex
+\providecommand \IfFormatAtLeastTF { \@ifl@t@r \fmtversion }
+
+\IfFormatAtLeastTF { 2022-06-01 }
+  { \ProcessKeyOptions [ anindex ] }
+  {
+    \RequirePackage { l3keys2e }
+    \ProcessKeysOptions { anindex }
+  }
+
+\IfFormatAtLeastTF { 2020-10-01 }
+  { }
+  { \RequirePackage { xparse } }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% if the .ani file exists then read it into \g_index_of_notation_tl
+\tl_new:N    \g_index_of_notation_tl
+\file_if_exist:nT{\c_sys_jobname_str.ani}
+{
+    \file_get:nnN {\c_sys_jobname_str.ani}
+                  {\cctab_begin:N\c_document_cctab}
+                  \g_index_of_notation_tl
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \notation{<symb>}{<desc>} writes a ani row entry to the ani file
+\tl_new:N    \l__ani_row_tl             % row of index currently being generated
+\tl_new:N    \g__ani_subsection_tl      % records current subsection number in ani
+\int_new:N   \g__ani_label_int          % used for automatic labels for ani entries
+
+\cs_generate_variant:Nn \iow_now:Nn {No}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\AtBeginDocument{
+  % create a stream to write the new ani file
+  \iow_new:N   \g__ani_iow
+  \iow_open:Nn \g__ani_iow {\c_sys_jobname_str.ani}
+
+  \iow_now:No \g__ani_iow { \c_percent_str~~Index~of~notation~generated~by~aNIndex.sty }
+  \iow_now:Nn \g__ani_iow { \begin{xltabular}{\textwidth}{llXr} }
+
+  % add a heading, with lines, if required
+  \bool_if:NT \g__ani_heading_bool
+  {
+    \bool_if:NT \g__ani_headerlines_bool
+      { \tl_put_right:Nn \l__ani_row_tl {\toprule} }
+    \tl_put_right:Nx \l__ani_row_tl
+      { \g__ani_sec_tl  & \g__ani_symbol_tl & \g__ani_description_tl & \g__ani_page_tl \\ }
+    \tl_put_right:Nn \l__ani_row_tl { \midrule\endhead }
+    \bool_if:NT \g__ani_headerlines_bool
+      { \tl_put_right:Nn \l__ani_row_tl {\bottomrule\endfoot} }
+
+    % now write the header to the file
+    \iow_now:No \g__ani_iow \l__ani_row_tl
+  }
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ensure that the last section in the ani is closed
+\AtEndDocument{
+  \iow_now:Nn  \g__ani_iow { \end{xltabular} }
+  \iow_close:N \g__ani_iow
+}
+
+% Add entry to the notational index
+% Usage: \notation{<symbol>}{<description>}
+\NewDocumentCommand\notation{ mmo }{
+  % clear the current row of the notational index
+  \tl_gclear:N \l__ani_row_tl
+
+  % determine current (sub)section in file
+  \tl_set:Nx \l_tmpa_tl { \cs:w the \tl_use:N \g__ani_symbol_level_tl \cs_end: }
+  \tl_if_eq:NNF  \l_tmpa_tl \g__ani_subsection_tl
+  {
+    % add a rule if required
+    \bool_if:NT \g__ani_midlines_bool
+    {
+      \tl_if_empty:NF \g__ani_subsection_tl { \tl_put_right:Nn \l__ani_row_tl {\midrule} }
+    }
+    % change the ani subsection number
+    \tl_gset:Nx \g__ani_subsection_tl {\l_tmpa_tl}
+    % record the new section number in the ani
+    \tl_put_right:Nx \l__ani_row_tl \g__ani_subsection_tl
+  }
+
+  % write the entry for the current to the ani
+  \tl_put_right:Nn \l__ani_row_tl {& }
+  \tl_put_right:No \l__ani_row_tl {#1}
+  \tl_put_right:Nn \l__ani_row_tl {& }
+  \tl_put_right:No \l__ani_row_tl {#2 }
+  \tl_put_right:Nn \l__ani_row_tl {& }
+
+  \IfNoValueTF{#3}
+  {
+    % increment the label counter and add a label
+    \int_gincr:N \g__ani_label_int
+    \label{ANI:\int_use:N \g__ani_label_int }
+    \tl_put_right:Nx \l__ani_row_tl
+    {
+      \noexpand\pageref{ANI:\int_use:N \g__ani_label_int}
+    }
+  }{
+    \tl_put_right:No \l__ani_row_tl {\noexpand\pageref{#3}}
+  }
+  % add a newline separator
+  \tl_put_right:Nn \l__ani_row_tl { \\ }
+  % write the row to the ani file
+  \iow_now:No \g__ani_iow {\l__ani_row_tl}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \AnIndexOfNotation inserts the ani into the document
+\NewDocumentCommand\IndexOfNotation{ }{%
+    \section*{\tl_use:N \g__ani_title_tl} \label{indexofnotation}
+
+    \begin{itshape}\noindent
+      \tl_use:N \g__ani_blurb_tl
+    \end{itshape}
+    \par
+
+    \tl_use:N \g_index_of_notation_tl
+}
+
+\endinput
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% CHANGE LOG
+%%
+%% Version 0.1
+%%    - initial version
+%%
+%% TODO:
+%%    - write documentation
+%%    - allow separate indexes for each chapter/section etc
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%% Copyright (C) 2022 by Andrew Mathas <andrew.mathas@gmail.com>
+%%
+%% This work may be distributed and/or modified under the
+%% conditions of the LaTeX Project Public License (LPPL), either
+%% version 1.3c of this license or (at your option) any later
+%% version.  The latest version of this license is in the file:
+%%
+%% http://www.latex-project.org/lppl.txt
+%%
+%% This work is "maintained" (as per LPPL maintenance status) by
+%% Andrew Mathas.
+%%
+%% This work consists of the files:
+%%       anindex.sty
